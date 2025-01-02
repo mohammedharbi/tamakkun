@@ -1,0 +1,70 @@
+package com.example.tamakkun.Model;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.util.Set;
+
+@Entity
+@Setter
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
+public class Specialist {
+
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @NotEmpty(message = "Specialist name is required!")
+    @Size(max = 20, message = "Specialist name cannot exceed 20 characters!")
+    @Column(columnDefinition = "varchar(20) not null")
+    private String name;
+
+    @NotEmpty(message = "Specialization is required!")
+    @Size(max = 50, message = "Specialization name cannot exceed 50 characters!")
+    @Column(columnDefinition = "varchar(50) not null")
+    private String specialization;
+
+    @Min(value = 4, message = "Experience years must be at least 4 years")
+    @Column(columnDefinition = "int not null")
+    private Integer experienceYears;
+
+
+    @Pattern(regexp = "^(http|https)://.*$", message = "Image URL must be a valid URL!")
+    @Column(columnDefinition = "varchar(100) not null")
+    private String imageUrl;
+
+    /////
+
+    @ElementCollection
+    @CollectionTable(name = "supported_disabilities", joinColumns = @JoinColumn(name = "specialist_id"))
+    @Column(name = "supportedDisabilities")
+    private Set<String> supportedDisabilities;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "specialist")
+    private Set<Review> reviews;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "specialist")
+    private Set<BookingDate> bookingDates;
+
+    @ManyToOne
+    @JsonIgnore
+    private Centre centre;
+
+
+
+
+
+
+
+}
