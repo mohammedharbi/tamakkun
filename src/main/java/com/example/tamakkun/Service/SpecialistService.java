@@ -99,17 +99,15 @@ public class SpecialistService {
         return specialists;
     }
 
-    public void addSupportedDisability(Integer centre_id, Integer specialist_id, String disabilityType) {
 
-        Centre centre = centreRepository.findCentreById(centre_id);
-        if (centre == null) {throw new ApiException("Centre not found!");}
-        Specialist specialist = specialistRepository.findSpecialistById(specialist_id);
-        if (specialist == null) {throw new ApiException("Specialist not found!");}
+    //2: Durrah
+    public List<Specialist> getTopRatedSpecialists() {
+        List<Specialist> results = specialistRepository.findTopRatedSpecialistsWithRatings();
 
-        if (!specialist.getCentre().getId().equals(centre_id)) {throw new ApiException("This specialist does not belong to the specified centre!");}
-
-        specialist.getSupportedDisabilities().add(disabilityType);
-        specialistRepository.save(specialist);
+        return results.stream()
+                .limit(5) // Fetch top 5 specialists
+                .map(result ->  results.get(0))
+                .collect(Collectors.toList());
     }
 
 
