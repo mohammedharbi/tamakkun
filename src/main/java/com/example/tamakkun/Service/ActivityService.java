@@ -27,7 +27,7 @@ public class ActivityService {
         List<ActivityDTO_Out>activityDTOOuts= new ArrayList<>();
 
         for(Activity activity : activities){
-            ActivityDTO_Out activityDTOOut = new ActivityDTO_Out(activity.getName(), activity.getDescription(), activity.getDisabilityType());
+            ActivityDTO_Out activityDTOOut = new ActivityDTO_Out(activity.getName(), activity.getDescription(), activity.getAllowedDisabilities());
             activityDTOOuts.add(activityDTOOut);
         }
         return activityDTOOuts;
@@ -63,7 +63,7 @@ public class ActivityService {
 
         oldActivity.setName(newActivity.getName());
         oldActivity.setDescription(newActivity.getDescription());
-        oldActivity.setDisabilityType(newActivity.getDisabilityType());
+        oldActivity.setAllowedDisabilities(newActivity.getAllowedDisabilities());
         oldActivity.setCentre(centre);
 
         //save

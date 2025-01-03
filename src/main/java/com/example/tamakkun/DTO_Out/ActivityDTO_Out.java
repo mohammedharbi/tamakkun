@@ -3,6 +3,8 @@ package com.example.tamakkun.DTO_Out;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 
@@ -13,7 +15,7 @@ public class ActivityDTO_Out {
 
     private String description;
 
-    private String disabilityType;
+    private List< String> allowedDisabilities;
 
 
 

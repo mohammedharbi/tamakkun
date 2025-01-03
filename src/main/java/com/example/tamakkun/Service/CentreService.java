@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -113,6 +114,25 @@ public class CentreService {
 
         authRepository.delete(user);
 
+    }
+
+
+    //3: Durrah
+
+    public List<CentreDTO_Out> filterCentresByPrice(Double minPrice, Double maxPrice) {
+        return centreRepository.findAll().stream()
+                .filter(centre -> centre.getPricePerHour() >= minPrice && centre.getPricePerHour() <= maxPrice)
+                .map(centre -> new CentreDTO_Out(
+                        centre.getName(),
+                        centre.getDescription(),
+                        centre.getAddress(),
+                        centre.getOpeningHour(),
+                        centre.getClosingHour(),
+                        centre.getIsVerified(),
+                        centre.getPricePerHour(),
+                        centre.getImageUrl()
+                ))
+                .collect(Collectors.toList());
     }
 
 
