@@ -2,6 +2,7 @@ package com.example.tamakkun.Model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Future;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,6 +22,7 @@ public class Booking {
     private Integer id;
 
 
+    @Future
     private LocalDateTime startTime;
 
     private Integer hours;

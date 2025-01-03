@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -49,7 +50,7 @@ public class Specialist {
     @ElementCollection
     @CollectionTable(name = "supported_disabilities", joinColumns = @JoinColumn(name = "specialist_id"))
     @Column(name = "supportedDisabilities")
-    private Set<String> supportedDisabilities;
+    private List<String> supportedDisabilities;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "specialist")
     private Set<Review> reviews;

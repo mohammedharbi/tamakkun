@@ -24,10 +24,16 @@ public class SpecialistController {
     }
 
     //will be @AuthPrinciple in security
-        @PostMapping("/add-Specialist/{centre_id}")
+        @PostMapping("/add-specialist/{centre_id}")
     public ResponseEntity addSpecialist(@PathVariable Integer centre_id, @RequestBody @Valid Specialist specialist){
 
         specialistService.addSpecialist(centre_id, specialist);
+        return ResponseEntity.status(200).body(new ApiResponse("Specialist added successfully!"));
+    }
+
+    @PostMapping("add-supported-disability/centre/{centre_id}/specialist/{specialist_id}/supportedDisability/{supportedDisability}")
+    public ResponseEntity addSupportedDisability(@PathVariable Integer centre_id, @PathVariable Integer specialist_id, @PathVariable String supportedDisability){
+        specialistService.addSupportedDisability(centre_id, specialist_id, supportedDisability);
         return ResponseEntity.status(200).body(new ApiResponse("Specialist added successfully!"));
     }
 
