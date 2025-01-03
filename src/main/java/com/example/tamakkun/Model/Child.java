@@ -25,7 +25,7 @@ public class Child {
     private Integer id;
 
     @NotEmpty(message = "Full name is required!")
-    @Column(columnDefinition = "varchar(30) not null")
+    @Column(columnDefinition = "varchar(30) not null unique")
     private String fullName;
 
     @NotEmpty(message = "Disability type is required!")
