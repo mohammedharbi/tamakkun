@@ -31,6 +31,9 @@ public class Booking {
 
     private Double totalPrice;
 
+    private Boolean notifyMe = false;
+    private Boolean isAlerted = false;
+
 
     @OneToOne(cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn

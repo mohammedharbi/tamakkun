@@ -19,7 +19,6 @@ public class BookingService {
     private final ChildRepository childRepository;
     private final CentreRepository centreRepository;
     private final SpecialistRepository specialistRepository;
-
     public void newBooking(Integer parent_id, Integer child_id, Integer centre_id, Integer hours, Booking booking) {
 
         // Validate Parent
@@ -63,11 +62,16 @@ public class BookingService {
             if (isAvailable) {
                 BookingDate newBookingDate = new BookingDate(null, booking.getStartTime(),
                         booking.getStartTime().plusHours(hours), booking, centre, specialist);
-                Booking newBooking = new Booking(null, booking.getStartTime(), hours, "Completed",
-                        centre.getPricePerHour() * hours, newBookingDate, parent, child, centre);
+                Booking newBooking = new Booking(null, booking.getStartTime(), hours, "Pending",
+                        centre.getPricePerHour() * hours,booking.getNotifyMe(),false, newBookingDate, parent, child, centre);
 
                 bookingRepository.save(newBooking);
                 bookingDateRepository.save(newBookingDate);
+                ///////////////////////////////////
+                // durrah
+                // email
+                // QRCode
+                ///////////////////////////////////
                 return; // Exit after successful booking
             }
         }
