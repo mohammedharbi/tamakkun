@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -21,64 +22,60 @@ public class BookingService {
 
     public void newBooking(Integer parent_id, Integer child_id, Integer centre_id, Integer hours, Booking booking) {
 
-        //check Parent
+        // Validate Parent
         Parent parent = parentRepository.findParentById(parent_id);
-        if(parent==null)throw new ApiException("there is no parent found");
+        if(parent == null) throw new ApiException("Parent not found.");
 
-        // check if the child exist and check if the parent is the parent of the child
-        Child child =childRepository.findChildById(child_id);
-        if(child ==null)throw new ApiException("there is no child found");
+        // Validate Child and Parent-Child Relationship
+        Child child = childRepository.findChildById(child_id);
+        if(child == null) throw new ApiException("Child not found.");
+        if(!child.getParent().getId().equals(parent_id)) throw new ApiException("The parent does not match the child.");
 
-        if(!child.getParent().getId().equals(parent_id))throw new ApiException("the parent isn't the parent of the child");
-
-        //check if centre exist
+        // Validate Centre
         Centre centre = centreRepository.findCentreById(centre_id);
-        if(centre==null)throw new ApiException("there is no centre found");
+        if(centre == null) throw new ApiException("Centre not found.");
+        //if(!centre.getIsVerified())throw new ApiException("The centre is not verified.");
 
-        //////////////
-        //check if start time is in the opening hours and start time and the hours booked do align with range of the opening hours and closing hours
-        ////////////// check local time
+        // Validate Booking Time
         LocalTime bookingStartTime = booking.getStartTime().toLocalTime();
-        boolean isWithinOperatingHours;
-        if (centre.getClosingHour().isBefore(centre.getOpeningHour())) { // Handles crossing midnight
-            isWithinOperatingHours =
-                    (bookingStartTime.isAfter(centre.getOpeningHour()) || bookingStartTime.equals(centre.getOpeningHour())) ||
-                            (bookingStartTime.isBefore(centre.getClosingHour()) || bookingStartTime.equals(centre.getClosingHour()));
-        } else { // not crossing midnight
-            isWithinOperatingHours =
-                    (bookingStartTime.isAfter(centre.getOpeningHour()) || bookingStartTime.equals(centre.getOpeningHour())) &&
-                            (bookingStartTime.isBefore(centre.getClosingHour()) || bookingStartTime.equals(centre.getClosingHour()));
+        boolean isWithinOperatingHours = (centre.getClosingHour().isBefore(centre.getOpeningHour())) ?
+                (bookingStartTime.isAfter(centre.getOpeningHour()) || bookingStartTime.isBefore(centre.getClosingHour())) :
+                (bookingStartTime.isAfter(centre.getOpeningHour()) && bookingStartTime.isBefore(centre.getClosingHour()));
+
+        if (!isWithinOperatingHours) throw new ApiException("Booking is outside operating hours.");
+
+        // Filter Specialists with Matching Disabilities
+        List<Specialist> matchingSpecialists = centre.getSpecialists().stream()
+                .filter(s -> checkIfSupportedDisabilities(s, child))
+                .toList();
+
+        if (matchingSpecialists.isEmpty()) {
+            throw new ApiException("No specialist supports the child's disabilities.");
         }
 
-        if (!isWithinOperatingHours) {throw new ApiException("Booking is outside operating hours.");}
+        // Check Specialist Availability and Create Booking
+        for (Specialist specialist : matchingSpecialists) {
+            boolean isAvailable = bookingDateRepository.findAllBySpecialist(specialist).stream()
+                    .noneMatch(existingBooking ->
+                            !(existingBooking.getEndTime().isBefore(booking.getStartTime()) ||
+                                    existingBooking.getStartTime().isAfter(booking.getStartTime().plusHours(hours))));
 
+            if (isAvailable) {
+                BookingDate newBookingDate = new BookingDate(null, booking.getStartTime(),
+                        booking.getStartTime().plusHours(hours), booking, centre, specialist);
+                Booking newBooking = new Booking(null, booking.getStartTime(), hours, "Completed",
+                        centre.getPricePerHour() * hours, newBookingDate, parent, child, centre);
 
-        //check if there is an specialist with supportedDisabilities same as the child disabilities
-
-        for (Specialist s: centre.getSpecialists()) {
-
-            if (checkIfSupportedDisabilities(s, child)){//
-                //check if this specialist isn't booked for this booking start and end date
-                for (BookingDate bookingDate:bookingDateRepository.findAll()){
-                    if (bookingDate.getSpecialist().getId().equals(s.getId())){
-                        if (!bookingDate.getStartTime().equals(booking.getStartTime()) && bookingDate.getEndTime().equals(booking.getStartTime().plusHours(hours))){
-                            BookingDate newBookingDate = new BookingDate(null,booking.getStartTime(),booking.getStartTime().plusHours(hours),booking,centre,s);
-                            Booking newBooking = new Booking(null,booking.getStartTime(),hours,"Completed",centre.getPricePerHour()*hours,newBookingDate,parent,child,centre);
-                            bookingRepository.save(newBooking);
-                            bookingDateRepository.save(newBookingDate);
-                        }
-                    }
-                }
-
-            }else throw new ApiException("there is no specialist found with supportedDisabilities same as the child disabilities");
+                bookingRepository.save(newBooking);
+                bookingDateRepository.save(newBookingDate);
+                return; // Exit after successful booking
+            }
         }
+
+        throw new ApiException("No available specialists for the specified time.");
     }
 
-    public Boolean checkIfSupportedDisabilities(Specialist specialist, Child child){ // it will check if specialists has a supported disabilities matching the child disabilities and return a boolean
-
-        for (String disability: specialist.getSupportedDisabilities()){
-            if (disability.equals(child.getDisabilityType())){return true;}
-        }
-        return false;
+    public Boolean checkIfSupportedDisabilities(Specialist specialist, Child child) {
+        return specialist.getSupportedDisabilities().contains(child.getDisabilityType());
     }
 }

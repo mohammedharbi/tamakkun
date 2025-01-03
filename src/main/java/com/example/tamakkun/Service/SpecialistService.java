@@ -99,6 +99,19 @@ public class SpecialistService {
         return specialists;
     }
 
+    public void addSupportedDisability(Integer centre_id, Integer specialist_id, String disabilityType) {
+
+        Centre centre = centreRepository.findCentreById(centre_id);
+        if (centre == null) {throw new ApiException("Centre not found!");}
+        Specialist specialist = specialistRepository.findSpecialistById(specialist_id);
+        if (specialist == null) {throw new ApiException("Specialist not found!");}
+
+        if (!specialist.getCentre().getId().equals(centre_id)) {throw new ApiException("This specialist does not belong to the specified centre!");}
+
+        specialist.getSupportedDisabilities().add(disabilityType);
+        specialistRepository.save(specialist);
+    }
+
 
 
 

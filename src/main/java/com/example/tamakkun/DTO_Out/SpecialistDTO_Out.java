@@ -3,6 +3,7 @@ package com.example.tamakkun.DTO_Out;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -18,7 +19,7 @@ public class SpecialistDTO_Out {
 
     private String imageUrl;
 
-    private Set<String> supportedDisabilities;
+    private List<String> supportedDisabilities;
 
 
 
