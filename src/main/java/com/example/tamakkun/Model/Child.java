@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,6 +30,7 @@ public class Child {
 
     @NotEmpty(message = "Disability type is required!")
     @Column(columnDefinition = "varchar(30) not null")
+    @Pattern(regexp = "(?i)SPEECH_AND_LANGUAGE_DISORDERS|PHYSICAL_DISABILITY|INTELLECTUAL_DISABILITY|SENSORY_DISABILITY|AUTISM|DOWN_SYNDROME", message = "Invalid disability type")
     private String disabilityType;
 
     @NotNull(message = "Age is required!")

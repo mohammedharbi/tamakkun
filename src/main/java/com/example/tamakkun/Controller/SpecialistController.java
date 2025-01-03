@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/tamakkun-system/specialist")
@@ -31,10 +33,17 @@ public class SpecialistController {
         return ResponseEntity.status(200).body(new ApiResponse("Specialist added successfully!"));
     }
 
-    @PostMapping("add-supported-disability/centre/{centre_id}/specialist/{specialist_id}/supportedDisability/{supportedDisability}")
-    public ResponseEntity addSupportedDisability(@PathVariable Integer centre_id, @PathVariable Integer specialist_id, @PathVariable String supportedDisability){
-        specialistService.addSupportedDisability(centre_id, specialist_id, supportedDisability);
-        return ResponseEntity.status(200).body(new ApiResponse("Specialist added successfully!"));
+    @GetMapping("/get-specialist-byDisability/{disabilityType}")
+    public ResponseEntity getSpecialistsBySupportedDisability(@PathVariable String disabilityType){
+        List<Specialist> specialists= specialistService.getSpecialistsBySupportedDisability(disabilityType);
+        return ResponseEntity.status(200).body(specialists);
+    }
+
+
+    @GetMapping("/top-rated-specialists")
+    public ResponseEntity getTopRatedSpecialists() {
+        List<Specialist> topRatedSpecialists = specialistService.getTopRatedSpecialists();
+        return ResponseEntity.status(200).body(topRatedSpecialists);
     }
 
 

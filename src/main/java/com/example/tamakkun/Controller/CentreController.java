@@ -2,12 +2,15 @@ package com.example.tamakkun.Controller;
 
 import com.example.tamakkun.API.ApiResponse;
 import com.example.tamakkun.DTO_In.CentreDTO_In;
+import com.example.tamakkun.DTO_Out.CentreDTO_Out;
 import com.example.tamakkun.Service.CentreService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -44,6 +47,14 @@ public class CentreController {
         centreService.deleteCentre(centre_id);
         return ResponseEntity.status(200).body(new ApiResponse("Centre deleted successfully!"));
 
+    }
+
+    @GetMapping("/filter-centres-byPrices/{minPrice}/{maxPrice}")
+    public ResponseEntity filterCentresByPrice(
+            @PathVariable Double minPrice,
+            @PathVariable Double maxPrice) {
+        List<CentreDTO_Out> filteredCentres = centreService.filterCentresByPrice(minPrice, maxPrice);
+        return ResponseEntity.status(200).body(filteredCentres);
     }
 
 

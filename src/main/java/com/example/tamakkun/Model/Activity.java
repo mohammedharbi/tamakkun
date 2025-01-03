@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @AllArgsConstructor
 @Getter
@@ -31,10 +33,11 @@ public class Activity {
     @Column(columnDefinition = "varchar(500) not null")
     private String description;
 
-    @NotEmpty(message = "Disability type is required!")
-    @Size(max = 30, message = "Activity cannot exceed 30 characters!")
-    @Column(columnDefinition = "varchar(30) not null")
-    private String disabilityType;
+
+    @ElementCollection
+    @CollectionTable(name = "allowed_disabilities", joinColumns = @JoinColumn(name = "activity_id"))
+    @Column(name = "allowedDisabilities")
+    private List<String> allowedDisabilities;
 
 
 

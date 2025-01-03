@@ -50,7 +50,7 @@ public class Specialist {
     @ElementCollection
     @CollectionTable(name = "supported_disabilities", joinColumns = @JoinColumn(name = "specialist_id"))
     @Column(name = "supportedDisabilities")
-    private List<String> supportedDisabilities;
+    private List<@Pattern(regexp = "(?i)SPEECH_AND_LANGUAGE_DISORDERS|PHYSICAL_DISABILITY|INTELLECTUAL_DISABILITY|SENSORY_DISABILITY|AUTISM|DOWN_SYNDROME", message = "Invalid disability type") String> supportedDisabilities;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "specialist")
     private Set<Review> reviews;
