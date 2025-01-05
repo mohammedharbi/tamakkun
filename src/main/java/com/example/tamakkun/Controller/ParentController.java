@@ -26,7 +26,7 @@ public class ParentController {
     @PostMapping("/register")
     public ResponseEntity register (@RequestBody @Valid ParentDTO_In parentDTOIn){
         parentService.register(parentDTOIn);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse("Parent added successfully"));
+        return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse("Parent registered successfully!"));
     }
     @PutMapping("/update")
     public ResponseEntity update (@AuthenticationPrincipal MyUser myUser, @RequestBody @Valid ParentDTO_In  parentDTOIn){

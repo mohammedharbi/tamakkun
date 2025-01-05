@@ -2,22 +2,24 @@ package com.example.tamakkun.Service;
 
 import com.example.tamakkun.API.ApiException;
 import com.example.tamakkun.DTO_In.CentreDTO_In;
-import com.example.tamakkun.DTO_Out.BookingDTO_Out;
+import com.example.tamakkun.DTO_Out.ActivityDTO_Out;
 import com.example.tamakkun.DTO_Out.CentreDTO_Out;
-import com.example.tamakkun.Model.Booking;
+import com.example.tamakkun.DTO_Out.SpecialistDTO_Out;
+import com.example.tamakkun.Model.Activity;
 import com.example.tamakkun.Model.Centre;
 import com.example.tamakkun.Model.MyUser;
+import com.example.tamakkun.Model.Specialist;
 import com.example.tamakkun.Repository.AuthRepository;
-import com.example.tamakkun.Repository.BookingDateRepository;
-import com.example.tamakkun.Repository.BookingRepository;
 import com.example.tamakkun.Repository.CentreRepository;
+import com.example.tamakkun.Repository.SpecialistRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,21 +29,23 @@ public class CentreService {
 
     private final CentreRepository centreRepository;
     private final AuthRepository authRepository;
-    private final BookingRepository bookingRepository;
+    private final SpecialistRepository specialistRepository;
 
-    public List<CentreDTO_Out> getAllCentres(){
-        List<Centre> centres = centreRepository.findAll();
-        List<CentreDTO_Out> centreDTO_outs= new ArrayList<>();
+    //is verified must appear to admin? i think return Centre not just DTO
 
-        for(Centre centre : centres){
-            CentreDTO_Out centreDTOOut = new CentreDTO_Out(centre.getName(), centre.getDescription(), centre.getAddress(), centre.getOpeningHour(), centre.getClosingHour(), centre.getPricePerHour(), centre.getImageUrl());
-            centreDTO_outs.add(centreDTOOut);
-        }
-        return centreDTO_outs;
+    //For admin
+    public List<Centre> getAllCentres(){
+      return centreRepository.findAll();
     }
 
 
     public void centreRegister(CentreDTO_In centreDTOIn) {
+
+        if (centreDTOIn.getOpeningHour().isAfter(centreDTOIn.getClosingHour()) ||
+                centreDTOIn.getOpeningHour().equals(centreDTOIn.getClosingHour())) {
+            throw new ApiException("Opening hour must be before closing hour!");
+        }
+
 
         MyUser myUser = new MyUser();
 
@@ -106,7 +110,7 @@ public class CentreService {
 
     }
 
-    //by centre itself
+    //by centre itself? or admin?
     public void deleteCentre(Integer user_id){
 
         MyUser user = authRepository.findMyUserById(user_id);
@@ -140,68 +144,89 @@ public class CentreService {
                 .collect(Collectors.toList());
     }
 
-    //E:#4 Mohammed
-    public List<BookingDTO_Out> getAllOldBookingsByCentre(Integer centre_id){
+    public CentreDTO_Out getCentreByName(String name) {
+        // use the repository method to fetch centre
+        Centre centre = centreRepository.findCentreByName(name);
 
-        List<BookingDTO_Out> oldBookings = new ArrayList<>();
-
-        // check if centre exist
-        Centre centre = centreRepository.findCentreById(centre_id);
-        if (centre == null) {throw new ApiException("Centre not found!");}
-
-        // get all bookings with the same center
-        List<Booking> bookings = bookingRepository.findBookingsByCentre(centre);
-        if (bookings == null) {throw new ApiException("Not found any bookings for the centre!");}
-
-        // get only old bookings
-        LocalDateTime currentDateTime = LocalDateTime.now();
-        for (Booking booking : bookings) {
-            if (booking.getBookingDate().getStartTime().isBefore(currentDateTime)) {
-                //change it to DTO OUT
-                BookingDTO_Out bookingDTO = new BookingDTO_Out(booking.getParent().getFullName(),
-                        booking.getChild().getFullName(),booking.getBookingDate().getSpecialist().getName(),
-                        booking.getStartTime().toLocalDate(),booking.getStartTime().toLocalTime(),booking.getHours(),
-                        booking.getTotalPrice());
-                oldBookings.add(bookingDTO);
-            }
+        if (centre == null) {
+            throw new ApiException("Centre with name " + name + " not found!");
         }
 
-        if (oldBookings.isEmpty()){throw new ApiException("Not found any new bookings for the centre!");}
-
-        return oldBookings;
+        return new CentreDTO_Out(
+                centre.getName(),
+                centre.getDescription(),
+                centre.getAddress(),
+                centre.getOpeningHour(),
+                centre.getClosingHour(),
+                centre.getPricePerHour(),
+                centre.getImageUrl()
+        );
     }
 
-    //E:#5 Mohammed
-    public List<BookingDTO_Out> getAllNewBookingsByCentre(Integer centre_id){
+    public List<CentreDTO_Out> getCentresByAddress(String address) {
+        // retrive centres by address
+        List<Centre> centres = centreRepository.findByAddressContainingIgnoreCase(address);
 
-        List<BookingDTO_Out> newBookings = new ArrayList<>();
+        // convert it to DTO
+        return centres.stream()
+                .map(centre -> new CentreDTO_Out(
+                        centre.getName(),
+                        centre.getDescription(),
+                        centre.getAddress(),
+                        centre.getOpeningHour(),
+                        centre.getClosingHour(),
+                        centre.getPricePerHour(),
+                        centre.getImageUrl()))
+                .collect(Collectors.toList());
+    }
 
-        // check if centre exist
-        Centre centre = centreRepository.findCentreById(centre_id);
-        if (centre == null) {throw new ApiException("Centre not found!");}
+    public List<CentreDTO_Out> getCentresByHoursRange(LocalTime startOpening, LocalTime endClosing) {
+       // specified time range
+        List<Centre> centres = centreRepository.findCentresByOpeningAndClosingHourRange(startOpening, endClosing);
 
-        // get all bookings with the same center
-        List<Booking> bookings = bookingRepository.findBookingsByCentre(centre);
-        if (bookings == null) {throw new ApiException("Not found any bookings for the centre!");}
-        // get only new bookings
-        LocalDateTime currentDateTime = LocalDateTime.now();
-        for (Booking booking : bookings) {
-            if (booking.getBookingDate().getStartTime().isBefore(currentDateTime)) {
-                //change it to DTO OUT
-                BookingDTO_Out bookingDTO = new BookingDTO_Out(booking.getParent().getFullName(),
-                        booking.getChild().getFullName(),booking.getBookingDate().getSpecialist().getName(),
-                        booking.getStartTime().toLocalDate(),booking.getStartTime().toLocalTime(),booking.getHours(),
-                        booking.getTotalPrice());
-                newBookings.add(bookingDTO);
-            }
-        }
-
-        if (newBookings.isEmpty()){throw new ApiException("Not found any new bookings for the centre!");}
-
-        return newBookings;
+        return centres.stream()
+                .map(centre -> new CentreDTO_Out(
+                        centre.getName(),
+                        centre.getDescription(),
+                        centre.getAddress(),
+                        centre.getOpeningHour(),
+                        centre.getClosingHour(),
+                        centre.getPricePerHour(),
+                        centre.getImageUrl()))
+                .collect(Collectors.toList());
     }
 
 
+    public List<ActivityDTO_Out> getActivitiesByCentre(Integer centreId) {
+        List<Activity> activities = centreRepository.findActivitiesByCentre(centreId);
+
+        return activities.stream().map(activity -> new ActivityDTO_Out(
+                activity.getName(),
+                activity.getDescription(),
+                activity.getAllowedDisabilities()
+        )).collect(Collectors.toList());
+    }
+
+
+    public List<SpecialistDTO_Out> getSpecialistsByCentre(Integer centreId) {
+        Centre centre = centreRepository.findById(centreId)
+                .orElseThrow(() -> new ApiException("Centre not found!"));
+
+        Set<Specialist> specialists = centre.getSpecialists();
+
+        return specialists.stream()
+                .map(specialist -> new SpecialistDTO_Out(
+                        specialist.getName(),
+                        specialist.getSpecialization(),
+                        specialist.getExperienceYears(),
+                        specialist.getImageUrl(),
+                        specialist.getSupportedDisabilities()))
+                .collect(Collectors.toList());
+    }
+
+    public Centre getMyCentre(Integer centreId) {
+        return centreRepository.findCentreById(centreId);
+    }
 
 
 
@@ -212,5 +237,4 @@ public class CentreService {
 
 
 
-
-}
+    }
