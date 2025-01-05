@@ -30,19 +30,19 @@ public class ChildController {
     @PostMapping("/add-child/{user_id}")
     public ResponseEntity addChild (@PathVariable Integer user_id , @RequestBody @Valid Child child){
         childService.addChild(user_id, child);
-        return ResponseEntity.status(200).body(new ApiResponse("Child added successfully"));
+        return ResponseEntity.status(200).body(new ApiResponse("Child added successfully!"));
     }
 
     @PutMapping("/update/{user_id}/{child_id}")
     public ResponseEntity update (@PathVariable Integer user_id ,@PathVariable Integer child_id, @RequestBody @Valid Child child){
         childService.update(user_id, child_id,child);
-        return ResponseEntity.status(200).body(new ApiResponse("Child updated successfully"));
+        return ResponseEntity.status(200).body(new ApiResponse("Child updated successfully!"));
     }
 
     @DeleteMapping("/delete/{user_id}/{child_id}")
     public ResponseEntity delete (@PathVariable Integer user_id  ,@PathVariable Integer child_id){
         childService.delete(user_id, child_id);
-        return ResponseEntity.status(200).body(new ApiResponse("Child deleted successfully"));
+        return ResponseEntity.status(200).body(new ApiResponse("Child deleted successfully!"));
     }
 
 }

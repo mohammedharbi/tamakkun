@@ -34,6 +34,21 @@ public class SpecialistController {
         return ResponseEntity.status(200).body(new ApiResponse("Specialist added successfully!"));
     }
 
+    @PutMapping("/update-specialist/{specialist_id}/{centre_id}")
+    public ResponseEntity updateSpecialist(@PathVariable Integer specialist_id, @RequestBody @Valid Specialist newSpecialist, @PathVariable Integer centre_id){
+
+        specialistService.updateSpecialist(specialist_id, newSpecialist, centre_id);
+        return ResponseEntity.status(200).body(new ApiResponse("Specialist updated successfully!"));
+
+    }
+
+    @DeleteMapping("/delete-specialist/{specialist_id}/{centre_id}")
+    public ResponseEntity deleteSpecialist(@PathVariable Integer specialist_id, @PathVariable Integer centre_id){
+        specialistService.deleteSpecialist(specialist_id, centre_id);
+        return ResponseEntity.status(200).body(new ApiResponse("Specialist deleted successfully!"));
+
+    }
+
     @GetMapping("/get-specialist-byDisability/{disabilityType}")
     public ResponseEntity getSpecialistsBySupportedDisability(@PathVariable String disabilityType){
         List<Specialist> specialists= specialistService.getSpecialistsBySupportedDisability(disabilityType);

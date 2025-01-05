@@ -38,7 +38,7 @@ public class ParentService {
     }
 
 
-    public void register (ParentDTO_In parentDTOIn){
+    public void parentRegister (ParentDTO_In parentDTOIn){
         MyUser myUser =new MyUser();
         myUser.setUsername(parentDTOIn.getUsername());
         String hashPassword= new BCryptPasswordEncoder().encode(parentDTOIn.getPassword());
@@ -54,7 +54,7 @@ public class ParentService {
         parentRepository.save(parent);
     }
 
-    public void update (Integer user_id , ParentDTO_In parentDTOIn){
+    public void updateParent(Integer user_id , ParentDTO_In parentDTOIn){
         MyUser myUser= authRepository.findMyUserById(user_id);
         if (myUser==null){
             throw new ApiException("wrong user id");
@@ -77,7 +77,7 @@ public class ParentService {
 
 
     //Admin
-    public void delete (Integer user_id){
+    public void deleteParent (Integer user_id){
         MyUser myUser = authRepository.findMyUserById(user_id);
         if (myUser==null){
             throw new ApiException("user not found");

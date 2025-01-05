@@ -37,6 +37,8 @@ public class PostService {
         MyUser user =authRepository.findMyUserById(user_id);
         if (user==null){
             throw new ApiException("user not found");}
+        if (!user.getParent().getIsActive()){throw new ApiException("Parent is not active therefore is not permitted to access this service!");}
+
         Community community= communityRepository.findCommunityById(1);
         if (community==null){
             throw new ApiException("Community not found");}
@@ -50,6 +52,8 @@ public class PostService {
         MyUser user =authRepository.findMyUserById(user_id);
         if (user==null){
             throw new ApiException("user not found");}
+        if (!user.getParent().getIsActive()){throw new ApiException("Parent is not active therefore is not permitted to access this service!");}
+
         Post old = postRepository.findPostById(post_id);
         if (old==null){
             throw new ApiException("post not found");}
@@ -63,6 +67,8 @@ public class PostService {
         MyUser user =authRepository.findMyUserById(user_id);
         if (user==null){
             throw new ApiException("user not found");}
+        if (!user.getParent().getIsActive()){throw new ApiException("Parent is not active therefore is not permitted to access this service!");}
+
         Post post =postRepository.findPostById(post_id);
         if (post==null){
             throw new ApiException("post not found");}
@@ -98,6 +104,7 @@ public class PostService {
         MyUser user = authRepository.findMyUserById(user_id);
         if(user==null){
             throw new ApiException("user not found");}
+        if (!user.getParent().getIsActive()){throw new ApiException("Parent is not active therefore is not permitted to access this service!");}
         Post post= postRepository.findPostById(post_id);
         if(post==null){
             throw new ApiException("post not found");}
@@ -114,8 +121,8 @@ public class PostService {
     public void unlikePost (Integer user_id , Integer post_id) {
         MyUser user = authRepository.findMyUserById(user_id);
         if (user == null) {
-            throw new ApiException("user not found");
-        }
+            throw new ApiException("user not found");}
+        if (!user.getParent().getIsActive()){throw new ApiException("Parent is not active therefore is not permitted to access this service!");}
         Post post = postRepository.findPostById(post_id);
         if (post == null) {
             throw new ApiException("post not found");
@@ -143,8 +150,8 @@ public List<PostDTO_Out> getAllLikedPosts (Integer user_id){
     public void  bookmarkPost (Integer user_id , Integer post_id){
         MyUser user = authRepository.findMyUserById(user_id);
         if (user == null) {
-            throw new ApiException("user not found");
-        }
+            throw new ApiException("user not found");}
+        if (!user.getParent().getIsActive()){throw new ApiException("Parent is not active therefore is not permitted to access this service!");}
         Post post = postRepository.findPostById(post_id);
         if (post == null) {
             throw new ApiException("post not found");}
@@ -157,8 +164,8 @@ public List<PostDTO_Out> getAllLikedPosts (Integer user_id){
     public void removeBookmark (Integer user_id , Integer post_id){
         MyUser user = authRepository.findMyUserById(user_id);
         if (user == null) {
-            throw new ApiException("user not found");
-        }
+            throw new ApiException("user not found");}
+        if (!user.getParent().getIsActive()){throw new ApiException("Parent is not active therefore is not permitted to access this service!");}
         Post post = postRepository.findPostById(post_id);
         if (post == null) {
             throw new ApiException("post not found");}

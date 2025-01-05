@@ -2,6 +2,7 @@ package com.example.tamakkun.Service;
 
 import com.example.tamakkun.API.ApiException;
 import com.example.tamakkun.DTO_Out.ActivityDTO_Out;
+import com.example.tamakkun.DTO_Out.CentreDTO_Out;
 import com.example.tamakkun.Model.Activity;
 import com.example.tamakkun.Model.Centre;
 import com.example.tamakkun.Model.MyUser;
@@ -18,7 +19,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ActivityService {
-
+    private final TextToSpeechService textToSpeechService;
     private final ActivityRepository activityRepository;
     private final CentreRepository centreRepository;
     private final AuthRepository authRepository;
@@ -101,6 +102,16 @@ public class ActivityService {
 
 
 
+    public byte[] getActivityDescriptionAsAudio(Integer activity_id) {
+        // الحصول على المركز
+        Activity activity = activityRepository.findActivityById(activity_id);
+        if (activity == null) {
+            throw new ApiException("This activity not found!");
+        }
+
+        // تحويل الوصف إلى صوت
+        return textToSpeechService.convertTextToAudio(activity.getDescription());
+    }
 
 
 

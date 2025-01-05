@@ -24,19 +24,19 @@ public class ParentController {
     }
 
     @PostMapping("/parent-register")
-    public ResponseEntity register (@RequestBody @Valid ParentDTO_In parentDTOIn){
-        parentService.register(parentDTOIn);
+    public ResponseEntity parentRegister (@RequestBody @Valid ParentDTO_In parentDTOIn){
+        parentService.parentRegister(parentDTOIn);
         return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse("Parent registered successfully!"));
     }
     @PutMapping("/update/{user_id}")
-    public ResponseEntity update (@PathVariable Integer user_id, @RequestBody @Valid ParentDTO_In  parentDTOIn){
-        parentService.update(user_id,parentDTOIn);
-        return ResponseEntity.status(200).body(new ApiResponse("updated successfully"));
+    public ResponseEntity updateParent (@PathVariable Integer user_id, @RequestBody @Valid ParentDTO_In  parentDTOIn){
+        parentService.updateParent(user_id,parentDTOIn);
+        return ResponseEntity.status(200).body(new ApiResponse("Parent updated successfully!"));
     }
     @DeleteMapping("/delete/{user_id}")
-    public ResponseEntity delete (@PathVariable Integer user_id ){
-        parentService.delete(user_id);
-        return ResponseEntity.status(200).body(new ApiResponse("deleted successfully"));
+    public ResponseEntity deleteParent (@PathVariable Integer user_id ){
+        parentService.deleteParent(user_id);
+        return ResponseEntity.status(200).body(new ApiResponse("Parent deleted successfully!"));
     }
 
     @GetMapping("get-all-old-bookings-by-parent/parent/{parent_id}")
@@ -62,7 +62,7 @@ public class ParentController {
     @PutMapping("cancel-booking/parent/{parent_id}/booking/{booking_id}")
     public ResponseEntity cancelBooking(@PathVariable Integer parent_id, @PathVariable Integer booking_id){
         parentService.cancelBooking(parent_id,booking_id);
-        return ResponseEntity.status(200).body(new ApiResponse("booking cancelled"));
+        return ResponseEntity.status(200).body(new ApiResponse("Booking cancelled successfully!"));
     }
 
 }

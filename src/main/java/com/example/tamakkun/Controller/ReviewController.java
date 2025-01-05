@@ -32,7 +32,7 @@ public class ReviewController {
 
     }
     @GetMapping("/top-three-specialists")
-    public ResponseEntity<List<SpecialistRatingDTO>> getTopRatedSpecialists() {
+    public ResponseEntity getTopRatedSpecialists() {
         List<SpecialistRatingDTO> topSpecialists = reviewService.getTopThreeRatedSpecialists();
         return ResponseEntity.ok(topSpecialists);
     }

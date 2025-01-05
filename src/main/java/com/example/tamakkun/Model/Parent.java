@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -29,7 +30,7 @@ public class Parent {
 
     @NotEmpty(message = "PhoneNumber is required!")
     @Pattern(regexp = "^(\\+966|0)?5\\d{8}$",   message = "Phone number must start with +966 or 05 and be followed by 8 digits")
-    @Column(columnDefinition = "varchar(13) not null")
+    @Column(columnDefinition = "varchar(13) not null unique")
     private String phoneNumber;
 
     @NotEmpty(message = "Address is required!")
@@ -65,7 +66,8 @@ public class Parent {
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "parent")
     private Set<Booking> bookings;
 
-
+    @OneToMany(mappedBy = "parent")
+    private Set<Ticket> tickets;
 
 
 

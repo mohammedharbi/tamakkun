@@ -27,13 +27,13 @@ public class CommunityController {
     @PutMapping("/update/{user_id}/{community_id}")
     public ResponseEntity update (@PathVariable Integer user_id ,@PathVariable Integer community_id, @RequestBody @Valid Community community){
         communityService.update(user_id, community_id,community);
-        return ResponseEntity.status(200).body(new ApiResponse("updated successfully"));
+        return ResponseEntity.status(200).body(new ApiResponse("Community updated successfully!"));
     }
 
     @DeleteMapping("/delete/{community_id}")
     public ResponseEntity delete (@AuthenticationPrincipal MyUser myUser , @PathVariable Integer community_id){
         communityService.delete(myUser.getId(),community_id);
-        return ResponseEntity.status(200).body(new ApiResponse("deleted successfully"));
+        return ResponseEntity.status(200).body(new ApiResponse("Community deleted successfully!"));
     }
 
 

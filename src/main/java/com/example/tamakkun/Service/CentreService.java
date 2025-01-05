@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -109,7 +110,6 @@ public class CentreService {
 
     }
 
-    //by centre itself? or admin?
     public void deleteCentre(Integer user_id){
 
         MyUser user = authRepository.findMyUserById(user_id);

@@ -177,8 +177,9 @@ public class BookingService {
     /**
      * Sends reminders to parents with bookings 1 day from now.
      */
+
    // @Scheduled(cron = "0 0 10 * * ?") // Scheduled to run daily at 10:00AM
-    @Scheduled(cron = "*/10 * * * * ?") // Scheduled to run every 10 seconds
+   // @Scheduled(cron = "*/10 * * * * ?") // Scheduled to run every 10 seconds
     public void sendBookingReminders() {
         LocalDateTime now = LocalDateTime.now();
 

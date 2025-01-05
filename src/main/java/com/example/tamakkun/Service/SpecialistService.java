@@ -25,17 +25,11 @@ public class SpecialistService {
     private final CentreRepository centreRepository;
 
 
-    public List<SpecialistDTO_Out> getAllSpecialists(){
-        List<Specialist> specialists = specialistRepository.findAll();
-        List<SpecialistDTO_Out>specialistDTOOuts= new ArrayList<>();
+    // Auth For admin
+    public List<Specialist> getAllSpecialists(){
 
-        for(Specialist specialist : specialists){
-            SpecialistDTO_Out specialistDTOOut = new SpecialistDTO_Out(specialist.getName(), specialist.getSpecialization(), specialist.getExperienceYears(),specialist.getImageUrl(), specialist.getSupportedDisabilities());
-            specialistDTOOuts.add(specialistDTOOut);
-        }
-        return specialistDTOOuts;
+        return specialistRepository.findAll();
     }
-
 
     //by centre
     public void addSpecialist(Integer centre_id, Specialist specialist){

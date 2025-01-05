@@ -53,12 +53,13 @@ public class ChildService {
     public void addChild (Integer user_id , Child child){
         MyUser myUser= authRepository.findMyUserById(user_id);
         if(myUser==null){
-            throw new ApiException("user not found");
-        }
+            throw new ApiException("user not found");}
         Parent parent= parentRepository.findParentByMyUser(myUser);
         if (parent==null){
             throw new ApiException("no parent associate with this user");
         }
+        if (!parent.getIsActive()){throw new ApiException("Parent is not active therefore is not permitted to access this service!");}
+
         child.setParent(parent);
         childRepository.save(child);
     }
@@ -70,6 +71,7 @@ public class ChildService {
         Parent parent= parentRepository.findParentByMyUser(myUser);
         if(parent==null){
             throw new ApiException("no parent associate with this user");}
+        if (!parent.getIsActive()){throw new ApiException("Parent is not active therefore is not permitted to access this service!");}
         Child old= childRepository.findChildById(child_id);
         if (old==null){
             throw new ApiException("child not found");}
@@ -86,6 +88,7 @@ public class ChildService {
         Parent parent= parentRepository.findParentByMyUser(myUser);
         if(parent==null){
             throw new ApiException("no parent associate with this user");}
+        if (!parent.getIsActive()){throw new ApiException("Parent is not active therefore is not permitted to access this service!");}
         Child child= childRepository.findChildById(child_id);
         if (child==null){
             throw new ApiException("child not found");}

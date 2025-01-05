@@ -26,19 +26,19 @@ public class CommentController {
     @PostMapping("/add-comment/{user_id}/{post_id}")
     public ResponseEntity addComment (@PathVariable Integer user_id ,@PathVariable Integer post_id, @RequestBody @Valid Comment comment){
         commentService.addComment(user_id, post_id,comment);
-        return ResponseEntity.status(200).body(new ApiResponse("added successfully"));
+        return ResponseEntity.status(200).body(new ApiResponse("Comment added successfully!"));
     }
 
     @PutMapping("/update/{user_id}/{post_id}/{comment_id}")
     public ResponseEntity update (@PathVariable Integer user_id ,@PathVariable Integer post_id,@PathVariable  Integer comment_id, @RequestBody @Valid Comment comment){
         commentService.update(user_id,post_id,comment_id,comment);
-        return ResponseEntity.status(200).body(new ApiResponse("updated successfully"));
+        return ResponseEntity.status(200).body(new ApiResponse("comment updated successfully!"));
     }
 
     @DeleteMapping("/delete/{user_id}/{comment_id}")
     public ResponseEntity delete (@PathVariable Integer user_id , @PathVariable Integer comment_id){
         commentService.delete(user_id,comment_id);
-        return ResponseEntity.status(200).body(new ApiResponse("deleted successfully"));
+        return ResponseEntity.status(200).body(new ApiResponse("Comment deleted successfully!"));
     }
 
     @GetMapping("/get-new-comments-By-Post/{post_id}")
