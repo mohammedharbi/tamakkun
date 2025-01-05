@@ -86,6 +86,10 @@ public class Centre {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "centre")
     private Set<Review> reviews;
 
+    @OneToMany(mappedBy = "centre")
+    private Set<Ticket> tickets;
+
+
 
 
 

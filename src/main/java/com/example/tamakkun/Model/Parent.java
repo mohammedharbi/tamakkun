@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -36,6 +37,11 @@ public class Parent {
     @Column(columnDefinition = "varchar(50) not null")
     private String address;
 
+
+    @ElementCollection
+    private Set<Integer> bookmarkedPostIds = new HashSet<>();
+
+
     @OneToOne
     @MapsId
     @JsonIgnore
@@ -60,6 +66,8 @@ public class Parent {
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "parent")
     private Set<Booking> bookings;
 
+    @OneToMany(mappedBy = "parent")
+    private Set<Ticket> tickets;
 
 
 

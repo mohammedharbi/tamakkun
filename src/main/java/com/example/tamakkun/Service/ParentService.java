@@ -25,7 +25,7 @@ public class ParentService {
             throw new ApiException(" user not found");
         }
         Parent parent= parentRepository.findParentByMyUser(user);
-        return new ParentDTO_Out(parent.getFullName(), parent.getPhoneNumber(), parent.getAddress());
+        return new ParentDTO_Out(parent.getFullName(),parent.getMyUser().getEmail(), parent.getPhoneNumber(), parent.getAddress());
     }
 
 
@@ -75,6 +75,7 @@ public class ParentService {
         myUser.setParent(null);
         authRepository.delete(myUser);
     }
+
 
 
 

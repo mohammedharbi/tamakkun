@@ -30,11 +30,11 @@ public class Community {
     private String name;
 
     @NotEmpty(message = "Full name is required!")
-    @Column(columnDefinition = "varchar(250) not null")
+    @Column(columnDefinition = "varchar(800) not null")
     private String description;
 
     @NotEmpty(message = "Full name is required!")
-    @Column(columnDefinition = "varchar(500) not null")
+    @Column(columnDefinition = "varchar(800) not null")
     private String rules;
 
     @JsonFormat(pattern = "yyyy-MM-dd")

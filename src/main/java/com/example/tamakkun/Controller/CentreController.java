@@ -58,8 +58,10 @@ public class CentreController {
     }
 
 
-
-
+    @GetMapping("/get-top5-center-by-avrRating")
+    public ResponseEntity getTop5CenterByAvrRating (){
+        return ResponseEntity.status(200).body(centreService.getTop5CenterByAvrRating());
+    }
 
 
 

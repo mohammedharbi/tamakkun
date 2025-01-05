@@ -11,6 +11,7 @@ import com.example.tamakkun.Repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,7 +41,7 @@ public class CommentService {
             throw new ApiException("post not found");}
         comment.setPost(post);
         comment.setParent(user.getParent());
-        comment.setCreatedAt(LocalDateTime.now());
+        comment.setCreatedAt(LocalDate.now());
         commentRepository.save(comment);
     }
 
@@ -56,7 +57,7 @@ public class CommentService {
         if (old==null){
             throw new ApiException("Comment not found");}
         old.setContent(comment.getContent());
-        commentRepository.save(comment);
+        commentRepository.save(old);
     }
 
 
@@ -67,6 +68,11 @@ public class CommentService {
         Comment comment = commentRepository.findCommentById(comment_id);
         if (comment==null){
             throw new ApiException("Comment not found");}
+        commentRepository.delete(comment);
+    }
+
+    public List<CommentDTO_Out> getNewCommentByPost (Integer post_id){
+        return convertCommentToDTO(commentRepository.findAllByNewCommentByPost(post_id)) ;
     }
 
     public List<CommentDTO_Out> convertCommentToDTO(Collection<Comment> comments){

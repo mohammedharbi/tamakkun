@@ -3,7 +3,9 @@ package com.example.tamakkun.Service;
 import com.example.tamakkun.API.ApiException;
 import com.example.tamakkun.DTO_In.CentreDTO_In;
 import com.example.tamakkun.DTO_Out.CentreDTO_Out;
+import com.example.tamakkun.DTO_Out.ChildDTO_Out;
 import com.example.tamakkun.Model.Centre;
+import com.example.tamakkun.Model.Child;
 import com.example.tamakkun.Model.MyUser;
 import com.example.tamakkun.Repository.AuthRepository;
 import com.example.tamakkun.Repository.CentreRepository;
@@ -12,6 +14,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,6 +25,7 @@ public class CentreService {
 
     private final CentreRepository centreRepository;
     private final AuthRepository authRepository;
+//    private final TextToSpeechService textToSpeechService;
 
     public List<CentreDTO_Out> getAllCentres(){
         List<Centre> centres = centreRepository.findAll();
@@ -136,9 +140,18 @@ public class CentreService {
     }
 
 
+    public List<CentreDTO_Out> getTop5CenterByAvrRating (){
+        return convertCentreToDTO(centreRepository.findTop5ByAverageRating());
+    }
 
 
-
+    public List<CentreDTO_Out> convertCentreToDTO(Collection<Centre> centres){
+        List<CentreDTO_Out> centreDTO_outs = new ArrayList<>();
+        for(Centre c : centres){
+            centreDTO_outs.add(new CentreDTO_Out(c.getName(),c.getDescription(),c.getAddress(),c.getOpeningHour(),c.getClosingHour(),c.getIsVerified(),c.getPricePerHour(),c.getImageUrl()));
+        }
+        return centreDTO_outs;
+    }
 
 
 

@@ -23,21 +23,26 @@ public class CommentController {
         return ResponseEntity.status(200).body(commentService.getCommentsByPost(post_id));
     }
 
-    @PostMapping("/add-comment/{post_id}")
-    public ResponseEntity addComment (@AuthenticationPrincipal MyUser user ,@PathVariable Integer post_id, @RequestBody @Valid Comment comment){
-        commentService.addComment(user.getId(), post_id,comment);
+    @PostMapping("/add-comment/{user_id}/{post_id}")
+    public ResponseEntity addComment (@PathVariable Integer user_id ,@PathVariable Integer post_id, @RequestBody @Valid Comment comment){
+        commentService.addComment(user_id, post_id,comment);
         return ResponseEntity.status(200).body(new ApiResponse("added successfully"));
     }
 
-    @PutMapping("/update/{community_id}")
-    public ResponseEntity update (@AuthenticationPrincipal MyUser myUser ,@PathVariable Integer post_id,@PathVariable  Integer comment_id, @RequestBody @Valid Comment comment){
-        commentService.update(myUser.getId(),post_id,comment_id,comment);
+    @PutMapping("/update/{user_id}/{post_id}/{comment_id}")
+    public ResponseEntity update (@PathVariable Integer user_id ,@PathVariable Integer post_id,@PathVariable  Integer comment_id, @RequestBody @Valid Comment comment){
+        commentService.update(user_id,post_id,comment_id,comment);
         return ResponseEntity.status(200).body(new ApiResponse("updated successfully"));
     }
 
-    @DeleteMapping("/delete/{comment_id}")
-    public ResponseEntity delete (@AuthenticationPrincipal MyUser myUser , @PathVariable Integer comment_id){
-        commentService.delete(myUser.getId(),comment_id);
+    @DeleteMapping("/delete/{user_id}/{comment_id}")
+    public ResponseEntity delete (@PathVariable Integer user_id , @PathVariable Integer comment_id){
+        commentService.delete(user_id,comment_id);
         return ResponseEntity.status(200).body(new ApiResponse("deleted successfully"));
+    }
+
+    @GetMapping("/get-new-comments-By-Post/{post_id}")
+    public ResponseEntity getNewCommentByPost (@PathVariable Integer post_id){
+        return ResponseEntity.status(200).body(commentService.getNewCommentByPost(post_id));
     }
 }
