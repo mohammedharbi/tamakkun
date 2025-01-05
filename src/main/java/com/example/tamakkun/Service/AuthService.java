@@ -2,8 +2,10 @@ package com.example.tamakkun.Service;
 
 import com.example.tamakkun.API.ApiException;
 import com.example.tamakkun.Model.Centre;
+import com.example.tamakkun.Model.Parent;
 import com.example.tamakkun.Repository.AuthRepository;
 import com.example.tamakkun.Repository.CentreRepository;
+import com.example.tamakkun.Repository.ParentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +17,7 @@ public class AuthService {
 
     private final AuthRepository authRepository;
     private final CentreRepository centreRepository;
+    private final ParentRepository parentRepository;
 
 //    public void register(MyUser user) {
 //        user.setRole("USER");
@@ -48,6 +51,24 @@ public class AuthService {
 
     public List<Centre> getAllUnverifiedCentres() {
         return centreRepository.findUnverifiedCentres(); // calling the @Query method
+    }
+
+    //E:#10 Mohammed
+    public void unActiveParent(Integer parent_id){ // by admin
+        Parent parent = parentRepository.findParentById(parent_id);
+        if (parent == null) {throw new ApiException("parent not found");}
+        if (parent.getIsActive()){
+            parent.setIsActive(false);
+        }else throw new ApiException("parent is already not active");
+    }
+
+    //E:#11 Mohammed
+    public List<Parent> getAllUnActiveParent(){ // by admin
+        List<Parent> unActiveParents = parentRepository.getParentByIsActive(false);
+
+        if (unActiveParents.isEmpty()) {throw new ApiException("Not found any unActive parents");}
+
+        return unActiveParents;
     }
 
 }

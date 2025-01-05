@@ -129,17 +129,6 @@ public class PostService {
 
     }
 
-    public Integer getLikes (Integer user_id , Integer post_id){
-        MyUser user= authRepository.findMyUserById(user_id);
-        if (user == null) {
-            throw new ApiException("user not found");}
-        Post post = postRepository.findPostById(post_id);
-        if (post == null) {
-            throw new ApiException("post not found");}
-        return post.getLikes();
-    }
-
-
 public List<PostDTO_Out> getAllLikedPosts (Integer user_id){
     MyUser user= authRepository.findMyUserById(user_id);
     if (user == null) {

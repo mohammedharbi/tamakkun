@@ -28,13 +28,13 @@ public class ParentService {
     private final CentreRepository centreRepository;
 
     //#
-    public ParentDTO_Out getParentById (Integer user_id ){
+    public ParentDTO_Out getParentById (Integer user_id ){//need to be tested
         MyUser user = authRepository.findMyUserById(user_id);
         if (user==null){
             throw new ApiException(" user not found");
         }
         Parent parent= parentRepository.findParentByMyUser(user);
-        return new ParentDTO_Out(parent.getFullName(), parent.getPhoneNumber(), parent.getAddress());
+        return new ParentDTO_Out(parent.getFullName(), parent.getPhoneNumber(),user.getEmail(), parent.getAddress());
     }
 
 
@@ -61,6 +61,9 @@ public class ParentService {
         }
 
         Parent parent= parentRepository.findParentByMyUser(myUser);
+
+        if (!parent.getIsActive()){throw new ApiException("Parent is not active therefore is not permitted to access this service!");}
+
         myUser.setUsername(parentDTOIn.getUsername());
         String hashPassword= new BCryptPasswordEncoder().encode(parentDTOIn.getPassword());
         myUser.setPassword(hashPassword);
@@ -86,7 +89,7 @@ public class ParentService {
     }
 
     //E:#6 Mohammed
-    public List<BookingDTO_Out> getAllOldBookingsByParent(Integer parent_id){
+    public List<BookingDTO_Out> getAllOldBookingsByParent(Integer parent_id){//need to be tested
 
         List<BookingDTO_Out> oldBookings = new ArrayList<>();
 
@@ -116,7 +119,7 @@ public class ParentService {
     }
 
     //E:#7 Mohammed
-    public List<BookingDTO_Out> getAllNewBookingsByParent(Integer parent_id){
+    public List<BookingDTO_Out> getAllNewBookingsByParent(Integer parent_id){//need to be tested
 
         List<BookingDTO_Out> newBookings = new ArrayList<>();
 
@@ -146,7 +149,7 @@ public class ParentService {
     }
 
     //E:#8 Mohammed
-    public List<BookingDTO_Out> getAllUnReviewedBookingsByParent(Integer parent_id){
+    public List<BookingDTO_Out> getAllUnReviewedBookingsByParent(Integer parent_id){//need to be tested
 
         List<BookingDTO_Out> Bookings = new ArrayList<>();
 
@@ -177,7 +180,7 @@ public class ParentService {
 
 
     //E:#9 Mohammed
-    public List<ReviewDTO_Out> getAllReviewedBookingsByParent(Integer parent_id){
+    public List<ReviewDTO_Out> getAllReviewedBookingsByParent(Integer parent_id){//need to be tested
         List<ReviewDTO_Out> reviewDTOOuts = new ArrayList<>();
 
         Parent parent = parentRepository.findParentById(parent_id);
@@ -195,15 +198,13 @@ public class ParentService {
         return reviewDTOOuts;
     }
 
-    //E:#13 Mohammed
-    public List<CentreDTO_Out> recommendationToParentsByCentresAndActivities(Integer parentId) {
+    //E:#14 Mohammed
+    public List<CentreDTO_Out> recommendationToParentsByCentresAndActivities(Integer parentId) {//need to be tested
         List<CentreDTO_Out> recommendations = new ArrayList<>();
 
         // check the parent
         Parent parent = parentRepository.findParentById(parentId);
-        if (parent == null) {
-            throw new ApiException("Parent not found!");
-        }
+        if (parent == null) {throw new ApiException("Parent not found!");}
 
         // Gather all disabilities of the parent's children into a Set
         Set<String> childDisabilities = new HashSet<>();
@@ -249,9 +250,8 @@ public class ParentService {
     public void cancelBooking(Integer parent_id, Integer booking_id) {
         // check if parent exists
         Parent parent = parentRepository.findParentById(parent_id);
-        if (parent == null) {
-            throw new ApiException("Parent not found!");
-        }
+        if (parent == null) {throw new ApiException("Parent not found!");}
+        if (!parent.getIsActive()){throw new ApiException("Parent is not active therefore is not permitted to access this service!");}
 
         // check if booking exists
         Booking booking = bookingRepository.findBookingById(booking_id);

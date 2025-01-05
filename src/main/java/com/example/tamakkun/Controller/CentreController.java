@@ -127,6 +127,18 @@ public class CentreController {
                     .body(("Failed to generate audio for the provided centre ID: " + e.getMessage()).getBytes());
         }}
 
+    @GetMapping("get-all-old-bookings-by-centre/centre/{centre_id}")
+    public ResponseEntity getAllOldBookingsByCentre(@PathVariable Integer centre_id){
+        return ResponseEntity.status(200).body(centreService.getAllOldBookingsByCentre(centre_id));
+    }
+
+    @GetMapping("get-all-new-bookings-by-centre/centre/{centre_id}")
+    public ResponseEntity getAllNewBookingsByCentre(@PathVariable Integer centre_id){
+        return ResponseEntity.status(200).body(centreService.getAllNewBookingsByCentre(centre_id));
+    }
+
+
+
 
 
 }

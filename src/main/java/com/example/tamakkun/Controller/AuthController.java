@@ -24,5 +24,16 @@ public class AuthController {
         return ResponseEntity.ok(authService.getAllUnverifiedCentres());
     }
 
+    @PutMapping("un-active-parent/parent/{parent_id}")// by admin
+    public ResponseEntity unActiveParent(@PathVariable Integer parent_id){
+        authService.unActiveParent(parent_id);
+        return ResponseEntity.ok(new ApiResponse("Parent activity status changed to un-active!"));
+    }
+
+    @GetMapping("get-all-un-active-parent")
+    public ResponseEntity getAllUnActiveParent(){
+        return ResponseEntity.status(200).body(authService.getAllUnActiveParent());
+    }
+
 
 }

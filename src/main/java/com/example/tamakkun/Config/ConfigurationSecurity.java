@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -27,34 +28,35 @@ public class ConfigurationSecurity {
     }
 
 
+//    @Bean
+//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//
+//        http.csrf().disable() // Disable CSRF for testing purposes
+//                .authorizeHttpRequests()
+//                .anyRequest().permitAll() // Allow all requests
+//                .and()
+//                .logout().disable() // Disable logout endpoint
+//                .httpBasic().disable(); // Disable HTTP Basic Authentication
+//
+//        return http.build();
+//    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
-        http.csrf().disable() // Disable CSRF for testing purposes
-                .authorizeHttpRequests()
-                .anyRequest().permitAll() // Allow all requests
+        http.csrf().disable()
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 .and()
-                .logout().disable() // Disable logout endpoint
-                .httpBasic().disable(); // Disable HTTP Basic Authentication
+                .authenticationProvider(daoAuthenticationProvider())
+                .authorizeHttpRequests()
+                .requestMatchers("/api/v1/tamakkun-system/parent-register").permitAll()
+                .and()
+                .logout().logoutUrl("/api/v1/user/logout")
+                .deleteCookies("JSESSIONID")
+                .invalidateHttpSession(true)
+                .and()
+                .httpBasic();
 
         return http.build();
     }
-
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        http.csrf().disable()
-//                .sessionManagement()
-//                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-//                .and()
-//                .authenticationProvider(daoAuthenticationProvider())
-//                .authorizeHttpRequests()
-//                .requestMatchers("").permitAll()
-//                .and()
-//                .logout().logoutUrl("/api/v1/user/logout")
-//                .deleteCookies("JSESSIONID")
-//                .invalidateHttpSession(true)
-//                .and()
-//                .httpBasic();
-//        return http.build();
-//    }
 }

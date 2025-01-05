@@ -38,6 +38,8 @@ public class BookingService {
         Parent parent = parentRepository.findParentById(parent_id);
         if(parent == null) throw new ApiException("Parent not found.");
 
+        if (!parent.getIsActive()){throw new ApiException("Parent is not active therefore is not permitted to access this service!");}
+
         // Validate Child and Parent-Child Relationship
         Child child = childRepository.findChildById(child_id);
         if(child == null) throw new ApiException("Child not found.");
@@ -213,6 +215,59 @@ public class BookingService {
                 }
             } catch (Exception e) {
                 System.out.println("Failed to send reminder for booking ID: " + booking.getId() + ". Error: " + e.getMessage());
+            }
+        }
+    }
+
+    //E:#12 Mohammed
+    @Scheduled(cron = "0 0 * * * ?") // the task will execute at the beginning of every hour (e.g., 1:00 PM, 2:00 PM, etc.).
+    public void updateBookingStatus() {
+        for (Booking booking : bookingRepository.findAll()) {
+            if (booking.getStatus().equalsIgnoreCase("Pending")) {
+                if (booking.getBookingDate().getEndTime().isBefore(LocalDateTime.now())) {
+                    booking.setStatus("Completed");
+                    booking.setIsAlerted(true);
+                    bookingRepository.save(booking);
+                }
+            }
+        }
+    }
+
+    //E:#13 Mohammed
+    @Scheduled(cron = "0 0 * * * ?") // the task will execute at the beginning of every hour (e.g., 1:00 PM, 2:00 PM, etc.).
+    public void autoRequestForReviewAfterVisit(){
+
+        for (Booking booking : bookingRepository.findAll()) {
+            if (booking.getStatus().equalsIgnoreCase("Completed")) {
+                if (!booking.getIsReviewed()&& !booking.getIsAskedToReview()){
+                    //  email's details
+                    String parentEmail = booking.getParent().getMyUser().getEmail();
+                    String subject = "Thank You for Your Visiting - We Value Your Feedback!";
+                    String body = String.format(
+                            "Dear %s,\n\n"
+                                    + "We hope this message finds you well. Thank you for completing your recent booking with us. "
+                                    + "We are committed to providing the best experience for you and your family.\n\n"
+                                    + "Booking Details:\n"
+                                    + "Centre: %s\n"
+                                    + "Start Time: %s\n"
+                                    + "Total Price: %.2f\n\n"
+                                    + "We would greatly appreciate it if you could take a moment to share your feedback. Your thoughts help us improve and ensure we continue delivering exceptional service.\n\n"
+                                    + "Please click the link below to leave your review:\n"
+                                    + "https://www.tamakkun.com/review\n\n"
+                                    + "Thank you for choosing us. We look forward to serving you again soon.\n\n"
+                                    + "Best regards,\n"
+                                    + "The Tamakkun Team",
+                            booking.getParent().getFullName(),
+                            booking.getCentre().getName(),
+                            booking.getStartTime().toString(),
+                            booking.getTotalPrice()
+                    );
+
+                    emailService.sendEmail(parentEmail, subject, body);
+                    booking.setIsAskedToReview(true);
+                    bookingRepository.save(booking);
+
+                }
             }
         }
     }

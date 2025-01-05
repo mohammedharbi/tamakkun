@@ -39,6 +39,22 @@ public class ParentController {
         return ResponseEntity.status(200).body(new ApiResponse("deleted successfully"));
     }
 
+    @GetMapping("get-all-old-bookings-by-parent/parent/{parent_id}")
+    public ResponseEntity getAllOldBookingsByParent(@PathVariable Integer parent_id){
+        return ResponseEntity.status(200).body(parentService.getAllOldBookingsByParent(parent_id));
+    }
+    @GetMapping("get-all-new-bookings-by-parent/parent/{parent_id}")
+    public ResponseEntity getAllNewBookingsByParent(@PathVariable Integer parent_id){
+        return ResponseEntity.status(200).body(parentService.getAllNewBookingsByParent(parent_id));
+    }
+    @GetMapping("get-all-un-reviewed-bookings-by-parent/parent/{parent_id}")
+    public ResponseEntity getAllUnReviewedBookingsByParent(@PathVariable Integer parent_id){
+        return ResponseEntity.status(200).body(parentService.getAllUnReviewedBookingsByParent(parent_id));
+    }
+    @GetMapping("get-all-reviewed-bookings-by-parent/parent/{parent_id}")
+    public ResponseEntity getAllReviewedBookingsByParent (@PathVariable Integer parent_id){// need to be tested
+        return ResponseEntity.status(200).body(parentService.getAllReviewedBookingsByParent(parent_id));
+    }
     @GetMapping("recommendation-to-parents-by-centre-and-activities/parent/{parent_id}")
     public ResponseEntity recommendationToParentsByCentresAndActivities(@PathVariable Integer parent_id){
         return ResponseEntity.status(200).body(parentService.recommendationToParentsByCentresAndActivities(parent_id));

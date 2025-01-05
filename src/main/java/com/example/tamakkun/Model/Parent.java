@@ -36,6 +36,11 @@ public class Parent {
     @Column(columnDefinition = "varchar(50) not null")
     private String address;
 
+    private Boolean isActive=true;
+
+    @ElementCollection
+    private Set<Integer> bookmarkedPostIds = new HashSet<>();
+
     @OneToOne
     @MapsId
     @JsonIgnore

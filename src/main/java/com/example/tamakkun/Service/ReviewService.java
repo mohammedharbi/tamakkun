@@ -48,6 +48,8 @@ public class ReviewService {
         if (parent == null || centre == null || specialist == null) {
             throw new ApiException("Cannot review: parent or centre or specialist not found.");
         }
+        if (!parent.getIsActive()){throw new ApiException("Parent is not active therefore is not permitted to access this service!");}
+
 
         // Retrieve only relevant centres
         List<Booking> centres = reviewRepository.findCompletedOffersByMyUserAndCentre(parent_id, centre_id);
