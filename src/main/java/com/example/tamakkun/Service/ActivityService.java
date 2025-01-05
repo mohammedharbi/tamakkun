@@ -24,15 +24,9 @@ public class ActivityService {
     private final CentreRepository centreRepository;
     private final AuthRepository authRepository;
 
-    public List<ActivityDTO_Out> getAllActivities(){
-        List<Activity> activities = activityRepository.findAll();
-        List<ActivityDTO_Out>activityDTOOuts= new ArrayList<>();
 
-        for(Activity activity : activities){
-            ActivityDTO_Out activityDTOOut = new ActivityDTO_Out(activity.getName(), activity.getDescription(), activity.getAllowedDisabilities());
-            activityDTOOuts.add(activityDTOOut);
-        }
-        return activityDTOOuts;
+    public List<Activity> getAllActivities(){
+        return  activityRepository.findAll();
     }
 
     //Activity will be added if centre already there
@@ -41,7 +35,6 @@ public class ActivityService {
 
         if(user==null)
             throw new ApiException("Centre not found!");
-
         activity.setCentre(user.getCentre());
         activityRepository.save(activity);
     }
@@ -89,7 +82,12 @@ public class ActivityService {
     //End CRUD
 
 
-    public List<ActivityDTO_Out> getActivitiesByDisabilityType(String disabilityType) {
+    public List<ActivityDTO_Out> getActivitiesByDisabilityType(Integer user_id, String disabilityType) {
+
+        MyUser user=authRepository.findMyUserById(user_id);
+        if(user==null)
+            throw new ApiException("User not found!");
+
         List<Activity> activities = activityRepository.findActivitiesByDisabilityType(disabilityType);
 
 

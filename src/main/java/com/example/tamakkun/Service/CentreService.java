@@ -34,8 +34,10 @@ public class CentreService {
     private final TextToSpeechService textToSpeechService;
     private final BookingRepository bookingRepository;
 
+
+    //For admin
     public List<Centre> getAllCentres(){
-      return centreRepository.findAll();
+        return centreRepository.findAll();
     }
 
 
@@ -110,6 +112,7 @@ public class CentreService {
 
     }
 
+    //by centre itself? or admin?
     public void deleteCentre(Integer user_id){
 
         MyUser user = authRepository.findMyUserById(user_id);
@@ -128,7 +131,12 @@ public class CentreService {
 
     //3: Durrah
 
-    public List<CentreDTO_Out> filterCentresByPrice(Double minPrice, Double maxPrice) {
+    public List<CentreDTO_Out> filterCentresByPrice(Integer user_id, Double minPrice, Double maxPrice) {
+
+        MyUser user = authRepository.findMyUserById(user_id);
+        if(user==null)
+            throw new ApiException("User not found!");
+
         return centreRepository.findAll().stream()
                 .filter(centre -> centre.getPricePerHour() >= minPrice && centre.getPricePerHour() <= maxPrice)
                 .map(centre -> new CentreDTO_Out(
@@ -143,7 +151,12 @@ public class CentreService {
                 .collect(Collectors.toList());
     }
 
-    public CentreDTO_Out getCentreByName(String name) {
+    public CentreDTO_Out getCentreByName(Integer user_id, String name) {
+
+        MyUser user = authRepository.findMyUserById(user_id);
+        if(user==null)
+            throw new ApiException("User not found!");
+
         // use the repository method to fetch centre
         Centre centre = centreRepository.findCentreByName(name);
 
@@ -162,7 +175,11 @@ public class CentreService {
         );
     }
 
-    public List<CentreDTO_Out> getCentresByAddress(String address) {
+    public List<CentreDTO_Out> getCentresByAddress(Integer user_id, String address) {
+
+        MyUser user = authRepository.findMyUserById(user_id);
+        if(user==null)
+            throw new ApiException("User not found!");
         // retrive centres by address
         List<Centre> centres = centreRepository.findByAddressContainingIgnoreCase(address);
 
@@ -179,8 +196,12 @@ public class CentreService {
                 .collect(Collectors.toList());
     }
 
-    public List<CentreDTO_Out> getCentresByHoursRange(LocalTime startOpening, LocalTime endClosing) {
-       // specified time range
+    public List<CentreDTO_Out> getCentresByHoursRange(Integer user_id, LocalTime startOpening, LocalTime endClosing) {
+
+        MyUser user = authRepository.findMyUserById(user_id);
+        if(user==null)
+            throw new ApiException("User not found!");
+        // specified time range
         List<Centre> centres = centreRepository.findCentresByOpeningAndClosingHourRange(startOpening, endClosing);
 
         return centres.stream()
@@ -196,7 +217,11 @@ public class CentreService {
     }
 
 
-    public List<ActivityDTO_Out> getActivitiesByCentre(Integer centreId) {
+    public List<ActivityDTO_Out> getActivitiesByCentre(Integer user_id, Integer centreId) {
+
+        MyUser user = authRepository.findMyUserById(user_id);
+        if(user==null)
+            throw new ApiException("User not found!");
         List<Activity> activities = centreRepository.findActivitiesByCentre(centreId);
 
         return activities.stream().map(activity -> new ActivityDTO_Out(
@@ -207,7 +232,8 @@ public class CentreService {
     }
 
 
-    public List<SpecialistDTO_Out> getSpecialistsByCentre(Integer centreId) {
+    public List<SpecialistDTO_Out> getSpecialistsByCentre( Integer centreId) {
+
         Centre centre = centreRepository.findById(centreId)
                 .orElseThrow(() -> new ApiException("Centre not found!"));
 
@@ -226,6 +252,8 @@ public class CentreService {
     public Centre getMyCentre(Integer centreId) {
         return centreRepository.findCentreById(centreId);
     }
+
+
 
     public byte[] getCentreDescriptionAsAudio(Integer centreId) {
         // الحصول على المركز

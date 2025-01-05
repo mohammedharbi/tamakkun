@@ -23,38 +23,36 @@ public class ActivityController {
 
     private final ActivityService activityService;
 
-
     @GetMapping("/get-activities")
     public ResponseEntity getAllActivities(){
         return ResponseEntity.status(200).body(activityService.getAllActivities());
     }
 
-    @PostMapping("/add-activity/{centre_id}")
-    public ResponseEntity addActivity(@PathVariable Integer centre_id, @RequestBody @Valid Activity activity){
-        activityService.addActivity(centre_id, activity);
-        return ResponseEntity.status(200).body(new ApiResponse("Activity added successfully!"));
+    @PostMapping("/add-activity")
+    public ResponseEntity addActivity(@AuthenticationPrincipal MyUser user, @RequestBody @Valid Activity activity){
+        activityService.addActivity(user.getId(), activity);
+        return ResponseEntity.status(200).body(new ApiResponse("Activity added successfully"));
     }
 
-    @PutMapping("/update-activity/{activity_id}/{centre_id}")
-    public ResponseEntity updateActivity(@PathVariable Integer activity_id,@RequestBody @Valid Activity activity, @PathVariable Integer centre_id){
-        activityService.updateActivity(activity_id, activity, centre_id);
-        return ResponseEntity.status(200).body(new ApiResponse("Activity updated successfully!"));
+    @PutMapping("/update-activity/{activity_id}")
+    public ResponseEntity updateActivity(@PathVariable Integer activity_id,@RequestBody @Valid Activity activity, @AuthenticationPrincipal MyUser user){
+        activityService.updateActivity(activity_id, activity, user.getId());
+        return ResponseEntity.status(200).body(new ApiResponse("Activity updated successfully"));
 
     }
-    @DeleteMapping("/delete-activity/{activity_id}/{centre_id}")
-    public ResponseEntity deleteActivity(@PathVariable Integer activity_id, @PathVariable Integer centre_id){
-        activityService.deleteActivity(activity_id, centre_id);
-        return ResponseEntity.status(200).body(new ApiResponse("Activity deleted successfully!"));
+    @DeleteMapping("/delete-activity/{activity_id}")
+    public ResponseEntity deleteActivity(@PathVariable Integer activity_id, @AuthenticationPrincipal MyUser user){
+        activityService.deleteActivity(activity_id, user.getId());
+        return ResponseEntity.status(200).body(new ApiResponse("Activity deleted successfully"));
 
 
     }
     @GetMapping("/activities-by-disabilityType/{disabilityType}")
-    public ResponseEntity getActivitiesByDisabilityType(@PathVariable String disabilityType){
-        List<ActivityDTO_Out> activities = activityService.getActivitiesByDisabilityType(disabilityType);
+    public ResponseEntity getActivitiesByDisabilityType(@AuthenticationPrincipal MyUser user, @PathVariable String disabilityType){
+        List<ActivityDTO_Out> activities = activityService.getActivitiesByDisabilityType(user.getId(), disabilityType);
         return ResponseEntity.status(200).body(activities);
 
     }
-
 
 
     @GetMapping("/description-audio/{activity_id}")

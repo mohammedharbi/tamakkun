@@ -17,7 +17,11 @@ public class CommunityService {
     private final CommunityRepository communityRepository;
     private final AuthRepository authRepository;
 
-    public CommunityDTO_out getCommunity (Integer community_id){
+    public CommunityDTO_out getCommunity (Integer user_id, Integer community_id){
+        MyUser user=authRepository.findMyUserById(user_id);
+        if(user==null)
+            throw new ApiException("User not found!");
+
         Community community =communityRepository.findCommunityById(community_id);
         if (community==null){
             throw new ApiException("Community not found");}

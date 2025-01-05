@@ -25,11 +25,10 @@ public class SpecialistService {
     private final CentreRepository centreRepository;
 
 
-    // Auth For admin
     public List<Specialist> getAllSpecialists(){
-
         return specialistRepository.findAll();
     }
+
 
     //by centre
     public void addSpecialist(Integer centre_id, Specialist specialist){
@@ -86,7 +85,10 @@ public class SpecialistService {
 
     //End CRUD
 
-    public List<Specialist> getSpecialistsBySupportedDisability(String disabilityType) {
+    public List<Specialist> getSpecialistsBySupportedDisability(Integer centre_id, String disabilityType) {
+        MyUser user = authRepository.findMyUserById(centre_id);
+        if(user==null)
+            throw new ApiException("User not found!");
         List<Specialist> specialists = specialistRepository.findBySupportedDisabilitiesContaining(disabilityType);
         if (specialists.isEmpty()) {
             throw new ApiException("No specialists found for the given disability type!");
@@ -96,13 +98,15 @@ public class SpecialistService {
 
 
 
-
-    public SpecialistDTO_Out getSpecialistByNameAndCentreId(String name, Integer centreId) {
+    public SpecialistDTO_Out getSpecialistByName(String name, Integer centreId) {
+        MyUser user = authRepository.findMyUserById(centreId);
+        if(user==null)
+            throw new ApiException("User not found!");
         Specialist specialist = specialistRepository.findByNameAndCentreId(name, centreId);
 
         // check if found a speciaalist
         if (specialist == null) {
-           throw new ApiException("Specialist with name " + name + " not found!");
+            throw new ApiException("Specialist with name " + name + " not found!");
         }
 
         return new SpecialistDTO_Out(specialist.getName(), specialist.getSpecialization(), specialist.getExperienceYears(), specialist.getImageUrl(), specialist.getSupportedDisabilities());
