@@ -75,23 +75,24 @@ public class BookingService {
 
             if (isAvailable) {
                 BookingDate newBookingDate = new BookingDate(null, booking.getStartTime(),
-                        booking.getStartTime().plusHours(hours), booking, centre, specialist);
+                        booking.getStartTime().plusHours(booking.getHours()), booking, centre, specialist);
 
-                Booking newBooking = new Booking(null, booking.getStartTime(), hours, "Pending",
-                        centre.getPricePerHour() * hours,booking.getNotifyMe(),false, booking.getIsScanned(),newBookingDate, parent, child, centre);
+                newBookingDate.getBooking().setChild(child);
+                newBookingDate.getBooking().setCentre(centre);
+                newBookingDate.getBooking().setParent(parent);
+                newBookingDate.getBooking().setTotalPrice(centre.getPricePerHour() * booking.getHours());
+                newBookingDate.getBooking().setStatus("Pending");
 
-                bookingRepository.save(newBooking);
                 bookingDateRepository.save(newBookingDate);
-
                  // Generate QR Code and send email
                 try {
-                    if (newBooking.getIsScanned()) {
+                    if (booking.getIsScanned()) {
                         throw new ApiException("Cannot generate a QR code for a scanned booking!");
                     }
 
-                    byte[] qrCode = generateQRCode(newBooking); // Generate QR code method calling
+                    byte[] qrCode = generateQRCode(booking); // Generate QR code method calling
                     // Send email notification
-                    sendBookingNotification(newBooking.getParent().getMyUser().getEmail(), newBooking, qrCode);
+                    sendBookingNotification(booking.getParent().getMyUser().getEmail(), booking, qrCode);
 
                 } catch (Exception e) {
                     throw new ApiException("Failed to generate QR code or send email! " + e.getMessage());
