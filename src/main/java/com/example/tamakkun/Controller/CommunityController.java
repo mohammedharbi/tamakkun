@@ -24,9 +24,9 @@ public class CommunityController {
     public ResponseEntity getCommunity (@PathVariable Integer community_id){
         return ResponseEntity.status(200).body(communityService.getCommunity(community_id));
     }
-    @PutMapping("/update/{community_id}")
-    public ResponseEntity update (@AuthenticationPrincipal MyUser myUser ,@PathVariable Integer community_id, @RequestBody @Valid Community community){
-        communityService.update(myUser.getId(), community_id,community);
+    @PutMapping("/update/{user_id}/{community_id}")
+    public ResponseEntity update (@PathVariable Integer user_id ,@PathVariable Integer community_id, @RequestBody @Valid Community community){
+        communityService.update(user_id, community_id,community);
         return ResponseEntity.status(200).body(new ApiResponse("updated successfully"));
     }
 

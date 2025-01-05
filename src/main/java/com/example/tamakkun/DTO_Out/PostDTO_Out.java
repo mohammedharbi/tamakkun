@@ -3,6 +3,7 @@ package com.example.tamakkun.DTO_Out;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 public class PostDTO_Out {
     private String title;
     private String content;
-    private LocalDateTime createdAt;
+    private LocalDate createdAt;
     private String parentName;
+    private Integer likes;
 }

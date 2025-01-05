@@ -18,24 +18,24 @@ public class ParentController {
     private final ParentService parentService;
 
 
-    @GetMapping("get-parent-by-id")
-    public  ResponseEntity getParentById (@AuthenticationPrincipal MyUser myUser){
-        return ResponseEntity.status(200).body(parentService.getParentById(myUser.getId()));
+    @GetMapping("get-parent-by-id/{user_id}")
+    public  ResponseEntity getParentById (@PathVariable Integer user_id){
+        return ResponseEntity.status(200).body(parentService.getParentById(user_id));
     }
 
-    @PostMapping("/register")
+    @PostMapping("/parent-register")
     public ResponseEntity register (@RequestBody @Valid ParentDTO_In parentDTOIn){
         parentService.register(parentDTOIn);
         return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse("Parent registered successfully!"));
     }
-    @PutMapping("/update")
-    public ResponseEntity update (@AuthenticationPrincipal MyUser myUser, @RequestBody @Valid ParentDTO_In  parentDTOIn){
-        parentService.update(myUser.getId(),parentDTOIn);
+    @PutMapping("/update/{user_id}")
+    public ResponseEntity update (@PathVariable Integer user_id, @RequestBody @Valid ParentDTO_In  parentDTOIn){
+        parentService.update(user_id,parentDTOIn);
         return ResponseEntity.status(200).body(new ApiResponse("updated successfully"));
     }
-    @DeleteMapping("/delete")
-    public ResponseEntity delete (@AuthenticationPrincipal MyUser myUser ){
-        parentService.delete(myUser.getId());
+    @DeleteMapping("/delete/{user_id}")
+    public ResponseEntity delete (@PathVariable Integer user_id ){
+        parentService.delete(user_id);
         return ResponseEntity.status(200).body(new ApiResponse("deleted successfully"));
     }
 

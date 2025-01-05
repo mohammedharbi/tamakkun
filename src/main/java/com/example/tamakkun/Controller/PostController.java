@@ -21,27 +21,76 @@ public class PostController {
         return ResponseEntity.status(200).body(postService.getPosts());
     }
 
-    @PostMapping("/add-post/{community_id}")
-    public ResponseEntity addPost (@AuthenticationPrincipal MyUser user , @PathVariable Integer community_id, @RequestBody @Valid Post post){
-        postService.addPost(user.getId(), community_id,post);
+    @PostMapping("/add-post/{user_id}")
+    public ResponseEntity addPost (@PathVariable Integer user_id, @RequestBody @Valid Post post){
+        postService.addPost(user_id,post);
         return ResponseEntity.status(200).body(new ApiResponse("added successfully"));
     }
 
-    @PutMapping("/update/{post_id}")
-    public ResponseEntity update (@AuthenticationPrincipal MyUser myUser ,@PathVariable Integer post_id, @RequestBody @Valid Post post){
-        postService.update(myUser.getId(),post_id,post);
+    @PutMapping("/update/{user_id}/{post_id}")
+    public ResponseEntity update (@PathVariable Integer user_id,@PathVariable Integer post_id, @RequestBody @Valid Post post){
+        postService.update(user_id,post_id,post);
         return ResponseEntity.status(200).body(new ApiResponse("updated successfully"));
     }
 
 
-    @DeleteMapping("/delete/{post_id}")
-    public ResponseEntity deletePost (@AuthenticationPrincipal MyUser myUser , @PathVariable Integer post_id){
-        postService.deletePost(myUser.getId(),post_id);
+    @DeleteMapping("/delete/{user_id}/{post_id}")
+    public ResponseEntity deletePost (@PathVariable Integer user_id , @PathVariable Integer post_id){
+        postService.deletePost(user_id,post_id);
         return ResponseEntity.status(200).body(new ApiResponse("deleted successfully"));
     }
 
     @GetMapping("/get-Post-by-id/{post_id}")
     public ResponseEntity getPostById (@PathVariable Integer  post_id){
         return ResponseEntity.status(200).body(postService.getPostById(post_id));
+    }
+
+    @GetMapping("/search-by-keyword/{keyword}")
+    public ResponseEntity searchByKeyword (@PathVariable String keyword){
+        return ResponseEntity.status(200).body(postService.searchByKeyword(keyword));
+    }
+
+    @GetMapping("/search-by-date/{startDate}/{endDate}")
+    public ResponseEntity searchByDate (@PathVariable String startDate,@PathVariable String endDate){
+        return ResponseEntity.status(200).body(postService.searchByDate(startDate,endDate));
+    }
+
+    @PutMapping("like-post/{user_id}/{post_id}")
+    public ResponseEntity likePost (@PathVariable Integer user_id ,@PathVariable Integer post_id){
+        postService.likePost(user_id,post_id);
+        return ResponseEntity.status(200).body(new ApiResponse("liked post successfully"));
+    }
+
+    @PutMapping("unlike-post/{user_id}/{post_id}")
+    public ResponseEntity unlikePost (@PathVariable Integer user_id ,@PathVariable Integer post_id){
+        postService.unlikePost(user_id,post_id);
+        return ResponseEntity.status(200).body(new ApiResponse("unliked post successfully"));
+    }
+
+    @GetMapping("/get-all-liked-posts/{user_id}")
+    public ResponseEntity getAllLikedPosts (@PathVariable Integer user_id){
+        return ResponseEntity.status(200).body(postService.getAllLikedPosts(user_id));
+    }
+
+    @PostMapping("/bookmark-post/{user_id}/{post_id}")
+    public ResponseEntity bookmarkPost (@PathVariable Integer user_id , @PathVariable Integer post_id){
+        postService.bookmarkPost(user_id,post_id);
+        return ResponseEntity.status(200).body(new ApiResponse("bookmark post successfully"));
+    }
+
+    @DeleteMapping("/remove-bookmark-post/{user_id}/{post_id}")
+    public ResponseEntity removeBookmark (@PathVariable Integer user_id , @PathVariable Integer post_id){
+        postService.removeBookmark(user_id,post_id);
+        return ResponseEntity.status(200).body(new ApiResponse("remove bookmark post successfully"));
+    }
+
+    @GetMapping("/get-bookmark-posts/{user_id}")
+    public ResponseEntity getBookmarkedPost (@PathVariable Integer user_id){
+        return ResponseEntity.status(200).body(postService.getBookmarkedPost(user_id));
+    }
+
+    @GetMapping("/get-post-by-parent-name/{parentName}")
+    public ResponseEntity getAllPostByParentName (@PathVariable String  parentName){
+        return ResponseEntity.status(200).body(postService.getAllPostByParentName(parentName));
     }
 }

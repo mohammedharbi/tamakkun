@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Set;
 
 @Entity
 @AllArgsConstructor
@@ -49,6 +50,12 @@ public class MyUser implements UserDetails {
     @OneToOne(cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn
     private Centre centre;
+
+    @OneToMany(mappedBy = "createdBy")
+    private Set<Ticket> tickets;
+
+    @OneToMany(mappedBy = "createdBy")
+    private Set<TicketComment> ticketComments;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

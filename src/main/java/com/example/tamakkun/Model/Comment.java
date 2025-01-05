@@ -10,7 +10,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 @AllArgsConstructor
@@ -30,7 +32,7 @@ public class Comment {
     @JsonFormat(pattern = "yyyy-MM-dd")
     @FutureOrPresent(message = "created date must be Future Or Present")
     @Column(columnDefinition = "datetime")
-    private LocalDateTime createdAt;
+    private LocalDate createdAt;
 
 
     @ManyToOne
@@ -40,6 +42,9 @@ public class Comment {
     @ManyToOne
     @JsonIgnore
     private Parent parent;
+
+    @OneToMany(mappedBy = "comment")
+    private Set<Ticket> tickets;
 
 
 }

@@ -10,6 +10,8 @@ import com.example.tamakkun.Model.MyUser;
 import com.example.tamakkun.Service.CentreService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -68,6 +70,10 @@ public class CentreController {
         return ResponseEntity.status(200).body(centreDTOOut);
     }
 
+    @GetMapping("/get-top5-center-by-avrRating")
+    public ResponseEntity getTop5CenterByAvrRating (){
+        return ResponseEntity.status(200).body(centreService.getTop5CenterByAvrRating());
+    }
 
     @GetMapping("/centres-by-address/{address}")
     public ResponseEntity getCentresByAddress(@PathVariable String address){
@@ -104,7 +110,22 @@ public class CentreController {
     }
 
 
+    @GetMapping("/description-audio/{centreId}")
+    public ResponseEntity<byte[]> getCentreDescriptionAsAudio(@PathVariable Integer centreId) {
+        try {
+            // تحويل الوصف إلى صوت
+            byte[] audioData = centreService.getCentreDescriptionAsAudio(centreId);
 
+            // إعداد الاستجابة مع ملف صوت
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_TYPE, "audio/mpeg");
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=centre_description.mp3");
+
+            return new ResponseEntity<>(audioData, headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(("Failed to generate audio for the provided centre ID: " + e.getMessage()).getBytes());
+        }}
 
 
 
