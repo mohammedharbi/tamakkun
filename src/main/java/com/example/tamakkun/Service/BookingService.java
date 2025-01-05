@@ -152,11 +152,14 @@ public class BookingService {
         emailService.sendEmailWithAttachment(email, subject, body, qrCode, "BookingQRCode.png");
     }
 
-    public void markBookingAsScanned(Integer bookingId) {
+    public void markBookingAsScanned(Integer centreId, Integer bookingId) {
 
+        Centre centre = centreRepository.findCentreById(centreId);
+        if (centre == null){throw new ApiException("centre not found!");}
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new ApiException("Booking not found!"));
 
+        if (!booking.getCentre().equals(centre)){throw new ApiException("this booking doesn't belong to the centre");}
         // Check if the booking is already scanned
         if (Boolean.TRUE.equals(booking.getIsScanned())) {
             throw new ApiException("This booking has already been scanned and completed!");
