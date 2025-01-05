@@ -25,7 +25,7 @@ public class CentreService {
 
     private final CentreRepository centreRepository;
     private final AuthRepository authRepository;
-//    private final TextToSpeechService textToSpeechService;
+    private final TextToSpeechService textToSpeechService;
 
     public List<CentreDTO_Out> getAllCentres(){
         List<Centre> centres = centreRepository.findAll();
@@ -138,7 +138,14 @@ public class CentreService {
                 ))
                 .collect(Collectors.toList());
     }
+    public byte[] getCentreDescriptionAsAudio(Integer centreId) {
+        // الحصول على المركز
+        Centre centre = centreRepository.findById(centreId)
+                .orElseThrow(() -> new RuntimeException("Centre not found"));
 
+        // تحويل الوصف إلى صوت
+        return textToSpeechService.convertTextToAudio(centre.getDescription());
+    }
 
     public List<CentreDTO_Out> getTop5CenterByAvrRating (){
         return convertCentreToDTO(centreRepository.findTop5ByAverageRating());
