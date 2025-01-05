@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -81,6 +82,20 @@ public class ActivityService {
         if(activity==null)
             throw new ApiException("Activity not found!");
         activityRepository.delete(activity);
+    }
+
+    //End CRUD
+
+
+    public List<ActivityDTO_Out> getActivitiesByDisabilityType(String disabilityType) {
+        List<Activity> activities = activityRepository.findActivitiesByDisabilityType(disabilityType);
+
+
+        return activities.stream().map(activity -> new ActivityDTO_Out(
+                activity.getName(),
+                activity.getDescription(),
+                activity.getAllowedDisabilities()
+        )).collect(Collectors.toList());
     }
 
 

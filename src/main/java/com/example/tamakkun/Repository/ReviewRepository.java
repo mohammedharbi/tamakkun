@@ -3,6 +3,7 @@ package com.example.tamakkun.Repository;
 import com.example.tamakkun.Model.Booking;
 import com.example.tamakkun.Model.BookingDate;
 import com.example.tamakkun.Model.Review;
+import com.example.tamakkun.Model.Specialist;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -16,4 +17,16 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
 
     @Query("select o from Booking o where o.parent.myUser.id=?1 and o.centre.id=?2 and o.status='Completed'")
     List<Booking> findCompletedOffersByMyUserAndCentre(Integer userId, Integer centreId);
+
+    List<Review> findByCentreId(Integer centreId);
+
+    @Query(value = "SELECT r.specialist_id, AVG(r.rating_specialist) as avgRating " +
+            "FROM review r " +
+            "GROUP BY r.specialist_id " +
+            "ORDER BY avgRating DESC " +
+            "LIMIT 3", nativeQuery = true)
+    List<Object[]> findTopThreeRatedSpecialists();
+
+
+
 }

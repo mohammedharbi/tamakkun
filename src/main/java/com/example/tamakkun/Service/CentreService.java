@@ -2,17 +2,24 @@ package com.example.tamakkun.Service;
 
 import com.example.tamakkun.API.ApiException;
 import com.example.tamakkun.DTO_In.CentreDTO_In;
+import com.example.tamakkun.DTO_Out.ActivityDTO_Out;
 import com.example.tamakkun.DTO_Out.CentreDTO_Out;
+import com.example.tamakkun.DTO_Out.SpecialistDTO_Out;
+import com.example.tamakkun.Model.Activity;
 import com.example.tamakkun.Model.Centre;
 import com.example.tamakkun.Model.MyUser;
+import com.example.tamakkun.Model.Specialist;
 import com.example.tamakkun.Repository.AuthRepository;
 import com.example.tamakkun.Repository.CentreRepository;
+import com.example.tamakkun.Repository.SpecialistRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,20 +29,23 @@ public class CentreService {
 
     private final CentreRepository centreRepository;
     private final AuthRepository authRepository;
+    private final SpecialistRepository specialistRepository;
 
-    public List<CentreDTO_Out> getAllCentres(){
-        List<Centre> centres = centreRepository.findAll();
-        List<CentreDTO_Out> centreDTO_outs= new ArrayList<>();
+    //is verified must appear to admin? i think return Centre not just DTO
 
-        for(Centre centre : centres){
-            CentreDTO_Out centreDTOOut = new CentreDTO_Out(centre.getName(), centre.getDescription(), centre.getAddress(), centre.getOpeningHour(), centre.getClosingHour(), centre.getIsVerified(), centre.getPricePerHour(), centre.getImageUrl());
-            centreDTO_outs.add(centreDTOOut);
-        }
-        return centreDTO_outs;
+    //For admin
+    public List<Centre> getAllCentres(){
+      return centreRepository.findAll();
     }
 
 
     public void centreRegister(CentreDTO_In centreDTOIn) {
+
+        if (centreDTOIn.getOpeningHour().isAfter(centreDTOIn.getClosingHour()) ||
+                centreDTOIn.getOpeningHour().equals(centreDTOIn.getClosingHour())) {
+            throw new ApiException("Opening hour must be before closing hour!");
+        }
+
 
         MyUser myUser = new MyUser();
 
@@ -100,7 +110,7 @@ public class CentreService {
 
     }
 
-    //by centre itself
+    //by centre itself? or admin?
     public void deleteCentre(Integer user_id){
 
         MyUser user = authRepository.findMyUserById(user_id);
@@ -128,11 +138,94 @@ public class CentreService {
                         centre.getAddress(),
                         centre.getOpeningHour(),
                         centre.getClosingHour(),
-                        centre.getIsVerified(),
                         centre.getPricePerHour(),
                         centre.getImageUrl()
                 ))
                 .collect(Collectors.toList());
+    }
+
+    public CentreDTO_Out getCentreByName(String name) {
+        // use the repository method to fetch centre
+        Centre centre = centreRepository.findCentreByName(name);
+
+        if (centre == null) {
+            throw new ApiException("Centre with name " + name + " not found!");
+        }
+
+        return new CentreDTO_Out(
+                centre.getName(),
+                centre.getDescription(),
+                centre.getAddress(),
+                centre.getOpeningHour(),
+                centre.getClosingHour(),
+                centre.getPricePerHour(),
+                centre.getImageUrl()
+        );
+    }
+
+    public List<CentreDTO_Out> getCentresByAddress(String address) {
+        // retrive centres by address
+        List<Centre> centres = centreRepository.findByAddressContainingIgnoreCase(address);
+
+        // convert it to DTO
+        return centres.stream()
+                .map(centre -> new CentreDTO_Out(
+                        centre.getName(),
+                        centre.getDescription(),
+                        centre.getAddress(),
+                        centre.getOpeningHour(),
+                        centre.getClosingHour(),
+                        centre.getPricePerHour(),
+                        centre.getImageUrl()))
+                .collect(Collectors.toList());
+    }
+
+    public List<CentreDTO_Out> getCentresByHoursRange(LocalTime startOpening, LocalTime endClosing) {
+       // specified time range
+        List<Centre> centres = centreRepository.findCentresByOpeningAndClosingHourRange(startOpening, endClosing);
+
+        return centres.stream()
+                .map(centre -> new CentreDTO_Out(
+                        centre.getName(),
+                        centre.getDescription(),
+                        centre.getAddress(),
+                        centre.getOpeningHour(),
+                        centre.getClosingHour(),
+                        centre.getPricePerHour(),
+                        centre.getImageUrl()))
+                .collect(Collectors.toList());
+    }
+
+
+    public List<ActivityDTO_Out> getActivitiesByCentre(Integer centreId) {
+        List<Activity> activities = centreRepository.findActivitiesByCentre(centreId);
+
+        return activities.stream().map(activity -> new ActivityDTO_Out(
+                activity.getName(),
+                activity.getDescription(),
+                activity.getAllowedDisabilities()
+        )).collect(Collectors.toList());
+    }
+
+
+    public List<SpecialistDTO_Out> getSpecialistsByCentre(Integer centreId) {
+        Centre centre = centreRepository.findById(centreId)
+                .orElseThrow(() -> new ApiException("Centre not found!"));
+
+        Set<Specialist> specialists = centre.getSpecialists();
+
+        return specialists.stream()
+                .map(specialist -> new SpecialistDTO_Out(
+                        specialist.getName(),
+                        specialist.getSpecialization(),
+                        specialist.getExperienceYears(),
+                        specialist.getImageUrl(),
+                        specialist.getSupportedDisabilities()))
+                .collect(Collectors.toList());
+    }
+
+    public Centre getMyCentre(Integer centreId) {
+        return centreRepository.findCentreById(centreId);
     }
 
 
@@ -144,7 +237,4 @@ public class CentreService {
 
 
 
-
-
-
-}
+    }
