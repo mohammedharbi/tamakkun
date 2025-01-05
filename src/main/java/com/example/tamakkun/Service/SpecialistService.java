@@ -101,14 +101,17 @@ public class SpecialistService {
     }
 
 
-    //2: Durrah
-    public List<Specialist> getTopRatedSpecialists() {
-        List<Specialist> results = specialistRepository.findTopRatedSpecialistsWithRatings();
 
-        return results.stream()
-                .limit(5) // Fetch top 5 specialists
-                .map(result ->  results.get(0))
-                .collect(Collectors.toList());
+
+    public SpecialistDTO_Out getSpecialistByNameAndCentreId(String name, Integer centreId) {
+        Specialist specialist = specialistRepository.findByNameAndCentreId(name, centreId);
+
+        // check if found a speciaalist
+        if (specialist == null) {
+           throw new ApiException("Specialist with name " + name + " not found!");
+        }
+
+        return new SpecialistDTO_Out(specialist.getName(), specialist.getSpecialization(), specialist.getExperienceYears(), specialist.getImageUrl(), specialist.getSupportedDisabilities());
     }
 
 

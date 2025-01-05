@@ -2,13 +2,16 @@ package com.example.tamakkun.Service;
 
 import com.example.tamakkun.API.ApiException;
 import com.example.tamakkun.DTO_Out.ReviewDTO_Out;
+import com.example.tamakkun.DTO_Out.SpecialistRatingDTO;
 import com.example.tamakkun.Model.*;
 import com.example.tamakkun.Repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -45,6 +48,8 @@ public class ReviewService {
         if (parent == null || centre == null || specialist == null) {
             throw new ApiException("Cannot review: parent or centre or specialist not found.");
         }
+        if (!parent.getIsActive()){throw new ApiException("Parent is not active therefore is not permitted to access this service!");}
+
 
         // Retrieve only relevant centres
         List<Booking> centres = reviewRepository.findCompletedOffersByMyUserAndCentre(parent_id, centre_id);
@@ -55,21 +60,45 @@ public class ReviewService {
         }
 
 
-
         // Add review to centre
         parent.getReviews().add(review);
         review.setCentre(centre);
         review.setParent(parent);
         review.setSpecialist(specialist);
 
-        // Update the average rating dynamically
-//        int totalReviews = centre.getReviews().size();
-//        double newAverage = ((centre.getAverageRating() * (totalReviews - 1)) + review.getRating()) / totalReviews;
-//        centre.setAverageRating(newAverage);
+
 
         // Save the review
         reviewRepository.save(review);
         centreRepository.save(centre);
         parentRepository.save(parent);
     }
+
+
+    public List<ReviewDTO_Out> getReviewsByCentre(Integer centreId) {
+        List<Review> reviews = reviewRepository.findByCentreId(centreId);
+
+        return reviews.stream()
+                .map(review -> new ReviewDTO_Out(
+                        review.getRatingCentre(),
+                        review.getRatingSpecialist(),
+                        review.getComment(),
+                        review.getParent() != null ? review.getParent().getFullName() : null,  // Parent name
+                        review.getCentre() != null ? review.getCentre().getName() : null,     // Centre name
+                        review.getSpecialist() != null ? review.getSpecialist().getName() : null  // Specialist name
+                ))
+                .collect(Collectors.toList());
+    }
+
+
+    public List<SpecialistRatingDTO> getTopThreeRatedSpecialists() {
+        List<Object[]> results = reviewRepository.findTopThreeRatedSpecialists();
+        return results.stream()
+                .map(row -> new SpecialistRatingDTO(
+                        (Integer) row[0],
+                        ((BigDecimal) row[1]).doubleValue()
+                ))
+                .toList();
+    }
+
 }

@@ -20,8 +20,6 @@ public class CentreDTO_Out {
 
     private LocalTime closingHour;
 
-    private Boolean isVerified;
-
     private Double pricePerHour;
 
     private String imageUrl;

@@ -6,6 +6,7 @@ import com.example.tamakkun.Service.SpecialistService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -39,11 +40,9 @@ public class SpecialistController {
         return ResponseEntity.status(200).body(specialists);
     }
 
-
-    @GetMapping("/top-rated-specialists")
-    public ResponseEntity getTopRatedSpecialists() {
-        List<Specialist> topRatedSpecialists = specialistService.getTopRatedSpecialists();
-        return ResponseEntity.status(200).body(topRatedSpecialists);
+    @GetMapping("/get-specialist-byName/{name}/{centreId}")
+    public ResponseEntity getSpecialistByNameAndCentreId(@PathVariable String name, @PathVariable Integer centreId){
+        return ResponseEntity.status(200).body(specialistService.getSpecialistByNameAndCentreId(name, centreId));
     }
 
 

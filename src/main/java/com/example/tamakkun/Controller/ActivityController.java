@@ -1,6 +1,7 @@
 package com.example.tamakkun.Controller;
 
 import com.example.tamakkun.API.ApiResponse;
+import com.example.tamakkun.DTO_Out.ActivityDTO_Out;
 import com.example.tamakkun.Model.Activity;
 import com.example.tamakkun.Model.MyUser;
 import com.example.tamakkun.Service.ActivityService;
@@ -9,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -41,6 +44,12 @@ public class ActivityController {
         activityService.deleteActivity(activity_id, centre_id);
         return ResponseEntity.status(200).body(new ApiResponse("Activity deleted successfully"));
 
+
+    }
+    @GetMapping("/activities-by-disabilityType/{disabilityType}")
+    public ResponseEntity getActivitiesByDisabilityType(@PathVariable String disabilityType){
+        List<ActivityDTO_Out> activities = activityService.getActivitiesByDisabilityType(disabilityType);
+        return ResponseEntity.status(200).body(activities);
 
     }
 

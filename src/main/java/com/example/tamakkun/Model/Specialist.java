@@ -36,6 +36,11 @@ public class Specialist {
     @Column(columnDefinition = "varchar(50) not null")
     private String specialization;
 
+    @NotEmpty(message = "PhoneNumber is required!")
+    @Pattern(regexp = "^(\\+966|0)?5\\d{8}$",   message = "Phone number must start with +966 or 05 and be followed by 8 digits")
+    @Column(columnDefinition = "varchar(13) not null unique")
+    private String phoneNumber;
+
     @Min(value = 4, message = "Experience years must be at least 4 years")
     @Column(columnDefinition = "int not null")
     private Integer experienceYears;

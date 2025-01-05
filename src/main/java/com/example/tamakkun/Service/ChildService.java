@@ -24,14 +24,12 @@ public class ChildService {
 
 
 
-    public List<ChildDTO_Out> getMyChildren(Integer user_id){
+    //E:#3 Mohammed
+    public List<ChildDTO_Out> getMyChildren(Integer user_id){// need to be tested
         MyUser user = authRepository.findMyUserById(user_id);
-        if (user==null){
-            throw new ApiException("wrong user id");
-        }
+        if (user==null){throw new ApiException("wrong user id");}
         Parent parent= user.getParent();
-        if(parent==null){
-            throw new ApiException("no parent associate with this user");}
+        if(parent==null){throw new ApiException("no parent associate with this user");}
         return convertChildToDTO(childRepository.findAllByParent(parent));
     }
 

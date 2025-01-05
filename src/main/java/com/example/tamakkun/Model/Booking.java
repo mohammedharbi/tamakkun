@@ -29,8 +29,16 @@ public class Booking {
 
     private String status;
 
+    private Boolean isReviewed=false;
+    private Boolean isAskedToReview=false;
+
     private Double totalPrice;
 
+    private Boolean notifyMe = false; //If parent want to send email about bokking reminder
+
+    private Boolean isAlerted = false; // If email sent or not
+
+    private Boolean isScanned = false; // Flag to track QR code usage
 
     @OneToOne(cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn

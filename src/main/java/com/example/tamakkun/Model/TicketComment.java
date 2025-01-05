@@ -3,7 +3,6 @@ package com.example.tamakkun.Model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,40 +10,31 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Set;
 
 @Entity
-@AllArgsConstructor
-@Getter
 @Setter
+@Getter
+@AllArgsConstructor
 @NoArgsConstructor
-public class Comment {
-
+public class TicketComment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
-    @NotEmpty(message = "Content is required!")
-    @Column(columnDefinition = "varchar(250) not null")
+    @NotEmpty(message = "Comment content is required!")
+    @Column(columnDefinition = "varchar(500) not null")
     private String content;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
-    @FutureOrPresent(message = "created date must be Future Or Present")
-    @Column(columnDefinition = "datetime")
+    @Column(columnDefinition = "date")
     private LocalDate createdAt;
 
+    @ManyToOne
+    @JsonIgnore
+    private Ticket ticket;
 
     @ManyToOne
     @JsonIgnore
-    private Post post;
-
-    @ManyToOne
-    @JsonIgnore
-    private Parent parent;
-
-    @OneToMany(mappedBy = "comment")
-    private Set<Ticket> tickets;
-
+    private MyUser createdBy;
 
 }
