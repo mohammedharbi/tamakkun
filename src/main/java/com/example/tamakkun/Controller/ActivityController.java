@@ -23,9 +23,9 @@ public class ActivityController {
 
     private final ActivityService activityService;
 
-    @GetMapping("/get-activities")
-    public ResponseEntity getAllActivities(){
-        return ResponseEntity.status(200).body(activityService.getAllActivities());
+    @GetMapping("/get-activities-by-centre/{centre_id}")
+    public ResponseEntity getAllActivitiesByCentre(@AuthenticationPrincipal MyUser myUser, @PathVariable Integer centre_id){
+        return ResponseEntity.status(200).body(activityService.getAllActivitiesByCentre(myUser.getId(), centre_id));
     }
 
     @PostMapping("/add-activity")

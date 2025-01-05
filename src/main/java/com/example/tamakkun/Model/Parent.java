@@ -24,16 +24,16 @@ public class Parent {
     private Integer id;
 
 
-    @NotEmpty(message = "Name is required!")
+   // @NotEmpty(message = "Name is required!")
     @Column(columnDefinition = "varchar(30) not null")
     private String fullName;
 
-    @NotEmpty(message = "PhoneNumber is required!")
-    @Pattern(regexp = "^(\\+966|0)?5\\d{8}$",   message = "Phone number must start with +966 or 05 and be followed by 8 digits")
+    //@NotEmpty(message = "PhoneNumber is required!")
+    //@Pattern(regexp = "^(\\+966|0)?5\\d{8}$",   message = "Phone number must start with +966 or 05 and be followed by 8 digits")
     @Column(columnDefinition = "varchar(13) not null unique")
     private String phoneNumber;
 
-    @NotEmpty(message = "Address is required!")
+   // @NotEmpty(message = "Address is required!")
     @Column(columnDefinition = "varchar(50) not null")
     private String address;
 

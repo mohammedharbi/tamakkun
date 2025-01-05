@@ -22,10 +22,8 @@ public class SpecialistController {
     private final SpecialistService specialistService;
 
 
-
-
-    @GetMapping("/get-specialists")
-    public ResponseEntity getAllSpecialists(){
+    @GetMapping("/get-all-specialists")
+    public ResponseEntity getAllSpecialists(@AuthenticationPrincipal MyUser user){
         return ResponseEntity.status(200).body(specialistService.getAllSpecialists());
     }
 

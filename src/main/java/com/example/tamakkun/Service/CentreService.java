@@ -35,9 +35,24 @@ public class CentreService {
     private final BookingRepository bookingRepository;
 
 
-    //For admin
+    //For admin --> more details about centre to him
     public List<Centre> getAllCentres(){
         return centreRepository.findAll();
+    }
+
+    //For all
+    public List<CentreDTO_Out> getCentres() {
+        return centreRepository.findAll().stream()
+                .map(centre -> new CentreDTO_Out(
+                        centre.getName(),
+                        centre.getDescription(),
+                        centre.getAddress(),
+                        centre.getOpeningHour(),
+                        centre.getClosingHour(),
+                        centre.getPricePerHour(),
+                        centre.getImageUrl()
+                ))
+                .collect(Collectors.toList());
     }
 
 
@@ -214,21 +229,6 @@ public class CentreService {
                         centre.getPricePerHour(),
                         centre.getImageUrl()))
                 .collect(Collectors.toList());
-    }
-
-
-    public List<ActivityDTO_Out> getActivitiesByCentre(Integer user_id, Integer centreId) {
-
-        MyUser user = authRepository.findMyUserById(user_id);
-        if(user==null)
-            throw new ApiException("User not found!");
-        List<Activity> activities = centreRepository.findActivitiesByCentre(centreId);
-
-        return activities.stream().map(activity -> new ActivityDTO_Out(
-                activity.getName(),
-                activity.getDescription(),
-                activity.getAllowedDisabilities()
-        )).collect(Collectors.toList());
     }
 
 

@@ -2,7 +2,6 @@ package com.example.tamakkun.Controller;
 
 import com.example.tamakkun.API.ApiResponse;
 import com.example.tamakkun.Model.Comment;
-import com.example.tamakkun.Model.Community;
 import com.example.tamakkun.Model.MyUser;
 import com.example.tamakkun.Service.CommentService;
 import jakarta.validation.Valid;
@@ -23,21 +22,21 @@ public class CommentController {
         return ResponseEntity.status(200).body(commentService.getCommentsByPost(post_id));
     }
 
-    @PostMapping("/add-comment/{user_id}/{post_id}")
-    public ResponseEntity addComment (@PathVariable Integer user_id ,@PathVariable Integer post_id, @RequestBody @Valid Comment comment){
-        commentService.addComment(user_id, post_id,comment);
+    @PostMapping("/add-comment/{post_id}")
+    public ResponseEntity addComment (@AuthenticationPrincipal MyUser user, @PathVariable Integer post_id, @RequestBody @Valid Comment comment){
+        commentService.addComment(user.getId(), post_id,comment);
         return ResponseEntity.status(200).body(new ApiResponse("Comment added successfully!"));
     }
 
-    @PutMapping("/update/{user_id}/{post_id}/{comment_id}")
-    public ResponseEntity update (@PathVariable Integer user_id ,@PathVariable Integer post_id,@PathVariable  Integer comment_id, @RequestBody @Valid Comment comment){
-        commentService.update(user_id,post_id,comment_id,comment);
+    @PutMapping("/update/{post_id}/{comment_id}")
+    public ResponseEntity update (@AuthenticationPrincipal MyUser user,@PathVariable Integer post_id,@PathVariable  Integer comment_id, @RequestBody @Valid Comment comment){
+        commentService.update(user.getId(), post_id,comment_id,comment);
         return ResponseEntity.status(200).body(new ApiResponse("comment updated successfully!"));
     }
 
-    @DeleteMapping("/delete/{user_id}/{comment_id}")
-    public ResponseEntity delete (@PathVariable Integer user_id , @PathVariable Integer comment_id){
-        commentService.delete(user_id,comment_id);
+    @DeleteMapping("/delete/{comment_id}")
+    public ResponseEntity delete (@AuthenticationPrincipal MyUser user, @PathVariable Integer comment_id){
+        commentService.delete(user.getId(), comment_id);
         return ResponseEntity.status(200).body(new ApiResponse("Comment deleted successfully!"));
     }
 

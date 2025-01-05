@@ -1,6 +1,7 @@
 package com.example.tamakkun.Controller;
 
 import com.example.tamakkun.API.ApiResponse;
+import com.example.tamakkun.DTO_In.BookingDTO_In;
 import com.example.tamakkun.Model.Booking;
 import com.example.tamakkun.Model.MyUser;
 import com.example.tamakkun.Model.Parent;
@@ -18,10 +19,10 @@ public class BookingController {
 
     private final BookingService bookingService;
 
-    @PostMapping("/new-booking/parent/{parent_id}/child/{child_id}/centre/{centre_id}/hours/{hours}")
-    public ResponseEntity newBooking(@AuthenticationPrincipal MyUser user, @PathVariable Integer child_id, @PathVariable Integer centre_id, @PathVariable Integer hours, @RequestBody @Valid Booking booking) {
+    @PostMapping("/new-booking/child/{child_id}/centre/{centre_id}")
+    public ResponseEntity newBooking(@AuthenticationPrincipal MyUser user, @PathVariable Integer child_id, @PathVariable Integer centre_id, @RequestBody @Valid BookingDTO_In bookingDTOIn) {
 
-        bookingService.newBooking(user.getId(), child_id,centre_id,hours,booking);
+        bookingService.newBooking(user.getId(), child_id,centre_id, bookingDTOIn);
         return ResponseEntity.status(200).body(new ApiResponse("Booking confirmed! You will receive an email with the QR code and details."));
 
     }

@@ -79,10 +79,15 @@ public class PostService {
 
 
     //#
-    public PostDTO_Out getPostById (Integer post_id){
+    public PostDTO_Out getPostById ( Integer user_id,Integer post_id){
+        MyUser user= authRepository.findMyUserById(user_id);
+
         Post post =postRepository.findPostById(post_id);
         if (post==null){
             throw new ApiException("post not found");}
+        if(!user.getParent().getId().equals(post.getParent().getId())){
+            throw new ApiException("you not allowed");
+        }
         return new PostDTO_Out(post.getTitle(), post.getContent(), post.getCreatedAt(),post.getParent().getFullName(),post.getLikes());
     }
 

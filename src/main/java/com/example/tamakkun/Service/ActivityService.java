@@ -24,12 +24,26 @@ public class ActivityService {
     private final CentreRepository centreRepository;
     private final AuthRepository authRepository;
 
+    public List<ActivityDTO_Out> getAllActivitiesByCentre(Integer user_id, Integer centre_id) {
 
-    public List<Activity> getAllActivities(){
-        return  activityRepository.findAll();
+        Centre centre = centreRepository.findCentreById(centre_id);
+        if(centre==null)
+            throw new ApiException("Centre not found!");
+
+        MyUser user =authRepository.findMyUserById(user_id);
+        if(user==null)
+            throw new ApiException("User not found!");
+
+        return activityRepository.findAll().stream()
+                .map(activity -> new ActivityDTO_Out(
+                        activity.getName(),
+                        activity.getDescription(),
+                        activity.getAllowedDisabilities()
+                ))
+                .collect(Collectors.toList());
     }
 
-    //Activity will be added if centre already there
+
     public void addActivity(Integer centre_id, Activity activity){
         MyUser user =authRepository.findMyUserById(centre_id);
 

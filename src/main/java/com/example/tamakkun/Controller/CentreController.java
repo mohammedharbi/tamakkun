@@ -5,7 +5,6 @@ import com.example.tamakkun.DTO_In.CentreDTO_In;
 import com.example.tamakkun.DTO_Out.ActivityDTO_Out;
 import com.example.tamakkun.DTO_Out.CentreDTO_Out;
 import com.example.tamakkun.DTO_Out.SpecialistDTO_Out;
-import com.example.tamakkun.Model.Activity;
 import com.example.tamakkun.Model.MyUser;
 import com.example.tamakkun.Service.CentreService;
 import jakarta.validation.Valid;
@@ -34,11 +33,16 @@ public class CentreController {
         return ResponseEntity.status(200).body(new ApiResponse("Centre registered successfully!"));
     }
 
-    @GetMapping("/get-centres")
+    //By admin only
+    @GetMapping("/get-all-centres")
     public ResponseEntity getAllCentres(){
 
         return ResponseEntity.status(200).body(centreService.getAllCentres());
 
+    }
+    @GetMapping("/get-centres")
+    public ResponseEntity getCentres(){
+        return ResponseEntity.status(200).body(centreService.getCentres());
     }
 
     @PutMapping("/update-centre/{centre_id}")
@@ -87,12 +91,6 @@ public class CentreController {
 
     }
 
-    @GetMapping("/activities-by-centre/{centreId}")
-    public ResponseEntity getActivitiesByCentre(@AuthenticationPrincipal MyUser user,@PathVariable Integer centreId){
-        List<ActivityDTO_Out> activities = centreService.getActivitiesByCentre(user.getId(), centreId);
-        return ResponseEntity.status(200).body(activities);
-
-    }
     @GetMapping("/all-specialists-byCentre")
     public ResponseEntity getSpecialistsByCentre(@AuthenticationPrincipal MyUser user){
         List<SpecialistDTO_Out> specialists=centreService.getSpecialistsByCentre(user.getId());
@@ -123,14 +121,14 @@ public class CentreController {
                     .body(("Failed to generate audio for the provided centre ID: " + e.getMessage()).getBytes());
         }}
 
-    @GetMapping("get-all-old-bookings-by-centre/centre/{centre_id}")
-    public ResponseEntity getAllOldBookingsByCentre(@PathVariable Integer centre_id){
-        return ResponseEntity.status(200).body(centreService.getAllOldBookingsByCentre(centre_id));
+    @GetMapping("get-all-old-bookings-by-centre")
+    public ResponseEntity getAllOldBookingsByCentre(@AuthenticationPrincipal MyUser user){
+        return ResponseEntity.status(200).body(centreService.getAllOldBookingsByCentre(user.getId()));
     }
 
-    @GetMapping("get-all-new-bookings-by-centre/centre/{centre_id}")
-    public ResponseEntity getAllNewBookingsByCentre(@PathVariable Integer centre_id){
-        return ResponseEntity.status(200).body(centreService.getAllNewBookingsByCentre(centre_id));
+    @GetMapping("get-all-new-bookings-by-centre")
+    public ResponseEntity getAllNewBookingsByCentre(@AuthenticationPrincipal MyUser user){
+        return ResponseEntity.status(200).body(centreService.getAllNewBookingsByCentre(user.getId()));
     }
 
 
