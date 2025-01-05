@@ -39,6 +39,7 @@ public class ActivityService {
 
         if(user==null)
             throw new ApiException("Centre not found!");
+
         activity.setCentre(user.getCentre());
         activityRepository.save(activity);
     }

@@ -17,10 +17,10 @@ public class BookingController {//
 
     private final BookingService bookingService;
 
-    @PostMapping("/new-booking/parent/{parent_id}/child/{child_id}/centre/{centre_id}/hours/{hours}")
-    public ResponseEntity newBooking(@PathVariable Integer parent_id, @PathVariable Integer child_id, @PathVariable Integer centre_id, @PathVariable Integer hours, @RequestBody @Valid Booking booking) {
+    @PostMapping("/new-booking/parent/{parent_id}/child/{child_id}/centre/{centre_id}")
+    public ResponseEntity newBooking(@PathVariable Integer parent_id, @PathVariable Integer child_id, @PathVariable Integer centre_id, @RequestBody @Valid Booking booking) {
 
-        bookingService.newBooking(parent_id, child_id,centre_id,hours,booking);
+        bookingService.newBooking(parent_id, child_id,centre_id,booking);
         return ResponseEntity.status(200).body("Booked successfully ");
 
     }

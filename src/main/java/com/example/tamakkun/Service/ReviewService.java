@@ -20,6 +20,7 @@ public class ReviewService {
     private final ChildRepository childRepository;
     private final CentreRepository centreRepository;
     private final SpecialistRepository specialistRepository;
+    private final BookingRepository bookingRepository;
 
 
     public List<ReviewDTO_Out> getAllReviews(){
@@ -34,42 +35,45 @@ public class ReviewService {
     }
 
 
-    public void addReviewCentre(Integer parent_id, Integer centre_id, Integer specialist_id, Review review) {
+    //E:#2 Mohammed
+    public void newReview(Integer parent_id, Integer booking_id, Review review) {
         Parent parent = parentRepository.findParentById(parent_id);
 
-        Centre centre = centreRepository.findCentreById(centre_id);
-        Specialist specialist = specialistRepository.findSpecialistById(specialist_id);
+        //booking checks
+        Booking booking = bookingRepository.findBookingById(booking_id);
+        if (booking == null) {throw new ApiException("booking not found");}
+        if (!booking.getParent().getId().equals(parent.getId())) {throw new ApiException("parent isn't the owner of this booking");}
+        if (!booking.getStatus().equalsIgnoreCase("Completed")){throw new ApiException("booking isn't completed, booking must be Completed in order to be reviewed");}
+        if (booking.getIsReviewed()){throw new ApiException("booking is already reviewed");}
+
+        Centre centre = centreRepository.findCentreById(booking.getCentre().getId());
+        Specialist specialist = specialistRepository.findSpecialistById(booking.getBookingDate().getSpecialist().getId());
 
 
-        // Validate user and service provider existence
+        // Validate parent and centre existence
         if (parent == null || centre == null || specialist == null) {
             throw new ApiException("Cannot review: parent or centre or specialist not found.");
         }
 
         // Retrieve only relevant centres
-        List<Booking> centres = reviewRepository.findCompletedOffersByMyUserAndCentre(parent_id, centre_id);
+        List<Booking> centres = reviewRepository.findCompletedOffersByMyUserAndCentre(parent_id, booking.getCentre().getId());
 
         // Ensure the user has completed an offer with this centre
         if (centres.isEmpty()) {
-            throw new ApiException("Parent does not have completed bookings with this service provider.");
+            throw new ApiException("Parent does not have completed bookings with this centre.");
         }
-
-
 
         // Add review to centre
         parent.getReviews().add(review);
         review.setCentre(centre);
         review.setParent(parent);
         review.setSpecialist(specialist);
-
-        // Update the average rating dynamically
-//        int totalReviews = centre.getReviews().size();
-//        double newAverage = ((centre.getAverageRating() * (totalReviews - 1)) + review.getRating()) / totalReviews;
-//        centre.setAverageRating(newAverage);
+        booking.setStatus("Reviewed");
 
         // Save the review
         reviewRepository.save(review);
         centreRepository.save(centre);
         parentRepository.save(parent);
+        bookingRepository.save(booking);
     }
 }

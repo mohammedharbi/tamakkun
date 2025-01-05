@@ -39,4 +39,14 @@ public class ParentController {
         return ResponseEntity.status(200).body(new ApiResponse("deleted successfully"));
     }
 
+    @GetMapping("recommendation-to-parents-by-centre-and-activities/parent/{parent_id}")
+    public ResponseEntity recommendationToParentsByCentresAndActivities(@PathVariable Integer parent_id){
+        return ResponseEntity.status(200).body(parentService.recommendationToParentsByCentresAndActivities(parent_id));
+    }
+    @PutMapping("cancel-booking/parent/{parent_id}/booking/{booking_id}")
+    public ResponseEntity cancelBooking(@PathVariable Integer parent_id, @PathVariable Integer booking_id){
+        parentService.cancelBooking(parent_id,booking_id);
+        return ResponseEntity.status(200).body(new ApiResponse("booking cancelled"));
+    }
+
 }

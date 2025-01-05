@@ -4,8 +4,10 @@ import com.example.tamakkun.API.ApiException;
 import com.example.tamakkun.Model.*;
 import com.example.tamakkun.Repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -19,7 +21,10 @@ public class BookingService {
     private final ChildRepository childRepository;
     private final CentreRepository centreRepository;
     private final SpecialistRepository specialistRepository;
-    public void newBooking(Integer parent_id, Integer child_id, Integer centre_id, Integer hours, Booking booking) {
+    private final EmailService emailService;
+
+    //E:#1 Mohammed
+    public void newBooking(Integer parent_id, Integer child_id, Integer centre_id, Booking booking) {
 
         // Validate Parent
         Parent parent = parentRepository.findParentById(parent_id);
@@ -33,7 +38,7 @@ public class BookingService {
         // Validate Centre
         Centre centre = centreRepository.findCentreById(centre_id);
         if(centre == null) throw new ApiException("Centre not found.");
-        //if(!centre.getIsVerified())throw new ApiException("The centre is not verified.");
+        if(!centre.getIsVerified())throw new ApiException("The centre is not verified.");
 
         // Validate Booking Time
         LocalTime bookingStartTime = booking.getStartTime().toLocalTime();
@@ -57,15 +62,18 @@ public class BookingService {
             boolean isAvailable = bookingDateRepository.findAllBySpecialist(specialist).stream()
                     .noneMatch(existingBooking ->
                             !(existingBooking.getEndTime().isBefore(booking.getStartTime()) ||
-                                    existingBooking.getStartTime().isAfter(booking.getStartTime().plusHours(hours))));
+                                    existingBooking.getStartTime().isAfter(booking.getStartTime().plusHours(booking.getHours()))));
 
             if (isAvailable) {
                 BookingDate newBookingDate = new BookingDate(null, booking.getStartTime(),
-                        booking.getStartTime().plusHours(hours), booking, centre, specialist);
-                Booking newBooking = new Booking(null, booking.getStartTime(), hours, "Pending",
-                        centre.getPricePerHour() * hours,booking.getNotifyMe(),false, newBookingDate, parent, child, centre);
+                        booking.getStartTime().plusHours(booking.getHours()), booking, centre, specialist);
 
-                bookingRepository.save(newBooking);
+                newBookingDate.getBooking().setChild(child);
+                newBookingDate.getBooking().setCentre(centre);
+                newBookingDate.getBooking().setParent(parent);
+                newBookingDate.getBooking().setTotalPrice(centre.getPricePerHour() * booking.getHours());
+                newBookingDate.getBooking().setStatus("Pending");
+
                 bookingDateRepository.save(newBookingDate);
                 ///////////////////////////////////
                 // durrah
@@ -82,4 +90,65 @@ public class BookingService {
     public Boolean checkIfSupportedDisabilities(Specialist specialist, Child child) {
         return specialist.getSupportedDisabilities().contains(child.getDisabilityType());
     }
+
+
+    //E:#12 Mohammed
+    @Scheduled(cron = "0 0 * * * ?") // the task will execute at the beginning of every hour (e.g., 1:00 PM, 2:00 PM, etc.).
+    public void updateBookingStatus() {
+        for (Booking booking : bookingRepository.findAll()) {
+            if (booking.getStatus().equalsIgnoreCase("Pending")) {
+                if (booking.getBookingDate().getEndTime().isBefore(LocalDateTime.now())) {
+                    booking.setStatus("Completed");
+                    booking.setIsAlerted(true);
+                    bookingRepository.save(booking);
+                }
+            }
+        }
+    }
+
+    //E:#13 Mohammed
+    @Scheduled(cron = "0 0 * * * ?") // the task will execute at the beginning of every hour (e.g., 1:00 PM, 2:00 PM, etc.).
+    public void autoRequestForReviewAfterVisit(){
+
+        for (Booking booking : bookingRepository.findAll()) {
+            if (booking.getStatus().equalsIgnoreCase("Completed")) {
+                if (!booking.getIsReviewed()&& !booking.getIsAskedToReview()){
+                        //  email's details
+                        String parentEmail = booking.getParent().getMyUser().getEmail();
+                        String subject = "Thank You for Your Visiting - We Value Your Feedback!";
+                        String body = String.format(
+                                "Dear %s,\n\n"
+                                        + "We hope this message finds you well. Thank you for completing your recent booking with us. "
+                                        + "We are committed to providing the best experience for you and your family.\n\n"
+                                        + "Booking Details:\n"
+                                        + "Centre: %s\n"
+                                        + "Start Time: %s\n"
+                                        + "Total Price: %.2f\n\n"
+                                        + "We would greatly appreciate it if you could take a moment to share your feedback. Your thoughts help us improve and ensure we continue delivering exceptional service.\n\n"
+                                        + "Please click the link below to leave your review:\n"
+                                        + "https://www.tamakkun.com/review\n\n"
+                                        + "Thank you for choosing us. We look forward to serving you again soon.\n\n"
+                                        + "Best regards,\n"
+                                        + "The Tamakkun Team",
+                                booking.getParent().getFullName(),
+                                booking.getCentre().getName(),
+                                booking.getStartTime().toString(),
+                                booking.getTotalPrice()
+                        );
+
+                        emailService.sendEmail(parentEmail, subject, body);
+                        booking.setIsAskedToReview(true);
+                        bookingRepository.save(booking);
+
+                }
+            }
+        }
+    }
+
+
+
+
+
+
+
 }

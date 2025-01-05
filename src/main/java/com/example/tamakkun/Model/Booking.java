@@ -29,11 +29,13 @@ public class Booking {
 
     private String status;
 
+    private Boolean isReviewed=false;
+    private Boolean isAskedToReview=false;
+
     private Double totalPrice;
 
     private Boolean notifyMe = false;
     private Boolean isAlerted = false;
-
 
     @OneToOne(cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn
