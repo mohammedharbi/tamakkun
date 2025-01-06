@@ -40,7 +40,7 @@ public class MyUser implements UserDetails {
 //    @Column(columnDefinition = "varchar(10)")
     private String role;
 
-    @Column(columnDefinition = "varchar(50) not null unique")
+    @Column(columnDefinition = "varchar(100) not null unique")
     private String email;
 
     @OneToOne(cascade = CascadeType.ALL)

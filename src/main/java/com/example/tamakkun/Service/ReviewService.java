@@ -64,7 +64,7 @@ public class ReviewService {
         review.setCentre(centre);
         review.setParent(parent);
         review.setSpecialist(specialist);
-        booking.setStatus("Reviewed");
+        booking.setIsReviewed(true);
 
         // Save the review
         reviewRepository.save(review);

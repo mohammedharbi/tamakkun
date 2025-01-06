@@ -2,6 +2,7 @@ package com.example.tamakkun.Service;
 
 import com.example.tamakkun.API.ApiException;
 import com.example.tamakkun.Model.Centre;
+import com.example.tamakkun.Model.MyUser;
 import com.example.tamakkun.Model.Parent;
 import com.example.tamakkun.Repository.AuthRepository;
 import com.example.tamakkun.Repository.CentreRepository;
@@ -19,16 +20,9 @@ public class AuthService {
     private final CentreRepository centreRepository;
     private final ParentRepository parentRepository;
 
-//    public void register(MyUser user) {
-//        user.setRole("USER");
-//        String HashPass = new BCryptPasswordEncoder().encode(user.getPassword());
-//        user.setPassword(HashPass);
-//        authRepository.save(user);
-//    }
-
-//    public List<MyUser> getAllUsers() {
-//        return authRepository.findAll();
-//    }
+    public List<MyUser> getAllUsers() {
+        return authRepository.findAll();
+    }
 
     public void verifyCentre(Integer centreId) {
         Centre centre = centreRepository.findCentreById(centreId);

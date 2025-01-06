@@ -134,7 +134,7 @@ public class ParentService {
         // get only new bookings
         LocalDateTime currentDateTime = LocalDateTime.now();
         for (Booking booking : bookings) {
-            if (booking.getBookingDate().getStartTime().isBefore(currentDateTime)) {
+            if (booking.getBookingDate().getStartTime().isAfter(currentDateTime)) {
                 //change it to DTO OUT
                 BookingDTO_Out bookingDTO = new BookingDTO_Out(booking.getParent().getFullName(),
                         booking.getChild().getFullName(),booking.getBookingDate().getSpecialist().getName(),

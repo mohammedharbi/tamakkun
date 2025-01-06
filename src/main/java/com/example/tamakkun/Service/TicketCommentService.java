@@ -61,7 +61,7 @@ public class TicketCommentService {
         if (!ticket.getCreatedBy().getId().equals(user.getId()) && !user.getRole().equalsIgnoreCase("ADMIN")) {
             throw new ApiException("Only the ticket creator or an admin can show comment on this ticket.");
         }
-        return convertTicketCommentToDTO(ticketCommentRepository.findByTicketId(ticket_id));}
+        return convertTicketCommentToDTO(ticketCommentRepository.findTicketCommentByTicketId(ticket_id));}
 
 
 

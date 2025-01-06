@@ -245,7 +245,7 @@ public class BookingService {
 
     //E:#13 Mohammed
     //@Scheduled(cron = "0 0 10 * * ?") // Scheduled to run daily at 10:00AM
-    @Scheduled(cron = "*/10 * * * * ?") // Scheduled to run every 10 seconds
+    //@Scheduled(cron = "*/10 * * * * ?") // Scheduled to run every 10 seconds
     public void autoRequestForReviewAfterVisit(){
 
         for (Booking booking : bookingRepository.findAll()) {

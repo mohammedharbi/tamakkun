@@ -6,6 +6,7 @@ import com.example.tamakkun.DTO_Out.ActivityDTO_Out;
 import com.example.tamakkun.DTO_Out.CentreDTO_Out;
 import com.example.tamakkun.DTO_Out.SpecialistDTO_Out;
 import com.example.tamakkun.Model.MyUser;
+import com.example.tamakkun.Model.Specialist;
 import com.example.tamakkun.Service.CentreService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -45,10 +46,10 @@ public class CentreController {
         return ResponseEntity.status(200).body(centreService.getCentres());
     }
 
-    @PutMapping("/update-centre/{centre_id}")
-    public ResponseEntity updateCentre(@PathVariable Integer centre_id, @RequestBody @Valid CentreDTO_In centreDTOIn, @AuthenticationPrincipal MyUser user){
+    @PutMapping("/update-centre")
+    public ResponseEntity updateCentre(@RequestBody @Valid CentreDTO_In centreDTOIn, @AuthenticationPrincipal MyUser user){
 
-        centreService.updateCentre(centre_id, centreDTOIn, user.getId());
+        centreService.updateCentre(centreDTOIn, user.getId());
         return ResponseEntity.status(200).body(new ApiResponse("Centre updated successfully!"));
 
     }
@@ -93,7 +94,7 @@ public class CentreController {
 
     @GetMapping("/all-specialists-byCentre")
     public ResponseEntity getSpecialistsByCentre(@AuthenticationPrincipal MyUser user){
-        List<SpecialistDTO_Out> specialists=centreService.getSpecialistsByCentre(user.getId());
+        List<Specialist> specialists=centreService.getAllSpecialistsByCentre(user.getId());
         return ResponseEntity.status(200).body(specialists);
 
     }

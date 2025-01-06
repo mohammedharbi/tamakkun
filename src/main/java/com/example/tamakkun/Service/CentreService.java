@@ -95,11 +95,10 @@ public class CentreService {
     }
 
 
-    public void updateCentre(Integer centre_id, CentreDTO_In centreDTOIn, Integer user_id){
+    public void updateCentre(CentreDTO_In centreDTOIn, Integer user_id){
 
-        Centre oldCentre = centreRepository.findCentreById(centre_id);
-        if(oldCentre==null)
-            throw new ApiException("Centre not found!");
+        Centre oldCentre = centreRepository.findCentreById(user_id);
+
 
         MyUser oldUser = authRepository.findMyUserById(oldCentre.getMyUser().getId());
         if(oldUser==null)
@@ -232,22 +231,15 @@ public class CentreService {
     }
 
 
-    public List<SpecialistDTO_Out> getSpecialistsByCentre( Integer centreId) {
+    public List<Specialist> getAllSpecialistsByCentre( Integer centreId) {
 
         Centre centre = centreRepository.findById(centreId)
                 .orElseThrow(() -> new ApiException("Centre not found!"));
 
-        Set<Specialist> specialists = centre.getSpecialists();
+        return specialistRepository.findAll();
 
-        return specialists.stream()
-                .map(specialist -> new SpecialistDTO_Out(
-                        specialist.getName(),
-                        specialist.getSpecialization(),
-                        specialist.getExperienceYears(),
-                        specialist.getImageUrl(),
-                        specialist.getSupportedDisabilities()))
-                .collect(Collectors.toList());
     }
+
 
     public Centre getMyCentre(Integer centreId) {
         return centreRepository.findCentreById(centreId);
@@ -303,7 +295,7 @@ public class CentreService {
             }
         }
 
-        if (oldBookings.isEmpty()){throw new ApiException("Not found any new bookings for the centre!");}
+        if (oldBookings.isEmpty()){throw new ApiException("Not found any old bookings for the centre!");}
 
         return oldBookings;
     }
@@ -323,7 +315,7 @@ public class CentreService {
         // get only new bookings
         LocalDateTime currentDateTime = LocalDateTime.now();
         for (Booking booking : bookings) {
-            if (booking.getBookingDate().getStartTime().isBefore(currentDateTime)) {
+            if (booking.getBookingDate().getStartTime().isAfter(currentDateTime)) {
                 //change it to DTO OUT
                 BookingDTO_Out bookingDTO = new BookingDTO_Out(booking.getParent().getFullName(),
                         booking.getChild().getFullName(),booking.getBookingDate().getSpecialist().getName(),

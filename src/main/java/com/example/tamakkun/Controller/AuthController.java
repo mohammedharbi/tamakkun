@@ -15,6 +15,11 @@ public class AuthController {
 
     private final AuthService authService;
 
+    @GetMapping("/get-all-users")
+    public ResponseEntity getAllUsers(@AuthenticationPrincipal MyUser user){
+        return ResponseEntity.status(200).body(authService.getAllUsers());
+    }
+
     @PutMapping("/centre-verify/{centreId}")
     public ResponseEntity verifyCentre(@AuthenticationPrincipal MyUser user, @PathVariable Integer centreId) {
         authService.verifyCentre(centreId);

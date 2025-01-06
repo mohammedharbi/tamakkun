@@ -27,7 +27,6 @@ public class SpecialistController {
         return ResponseEntity.status(200).body(specialistService.getAllSpecialists());
     }
 
-    //will be @AuthPrinciple in security
     @PostMapping("/add-specialist")
     public ResponseEntity addSpecialist(@AuthenticationPrincipal MyUser user, @RequestBody @Valid Specialist specialist){
 
