@@ -2,9 +2,7 @@ package com.example.tamakkun.Service;
 
 import com.example.tamakkun.API.ApiException;
 import com.example.tamakkun.DTO_Out.CommentDTO_Out;
-import com.example.tamakkun.DTO_Out.PostDTO_Out;
-import com.example.tamakkun.Model.Comment;
-import com.example.tamakkun.Model.Community;
+import com.example.tamakkun.Model.PostComment;
 import com.example.tamakkun.Model.MyUser;
 import com.example.tamakkun.Model.Post;
 import com.example.tamakkun.Repository.*;
@@ -12,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -32,31 +29,36 @@ public class CommentService {
         return convertCommentToDTO(commentRepository.findAllByPost(post));
     }
 
-    public void addComment (Integer user_id ,Integer post_id, Comment comment){
+    public void addComment (Integer user_id ,Integer post_id, PostComment postComment){
         MyUser user =authRepository.findMyUserById(user_id);
         if (user==null){
             throw new ApiException("user not found");}
+        if (!user.getParent().getIsActive()){throw new ApiException("Parent is not active therefore is not permitted to access this service!");}
         Post post =postRepository.findPostById(post_id);
         if (post==null){
             throw new ApiException("post not found");}
-        comment.setPost(post);
-        comment.setParent(user.getParent());
-        comment.setCreatedAt(LocalDate.now());
-        commentRepository.save(comment);
+        postComment.setPost(post);
+        postComment.setParent(user.getParent());
+        postComment.setCreatedAt(LocalDate.now());
+        commentRepository.save(postComment);
     }
 
 
-    public void update (Integer user_id , Integer post_id , Integer comment_id, Comment comment){
+    public void update (Integer user_id , Integer post_id , Integer comment_id, PostComment postComment){
         MyUser user =authRepository.findMyUserById(user_id);
         if (user==null){
             throw new ApiException("user not found");}
+        if (!user.getParent().getIsActive()){throw new ApiException("Parent is not active therefore is not permitted to access this service!");}
         Post post =postRepository.findPostById(post_id);
         if (post==null){
             throw new ApiException("post not found");}
-        Comment old = commentRepository.findCommentById(comment_id);
+        PostComment old = commentRepository.findCommentById(comment_id);
         if (old==null){
-            throw new ApiException("Comment not found");}
-        old.setContent(comment.getContent());
+            throw new ApiException("PostComment not found");}
+        if(!old.getParent().getId().equals(user_id)){
+            throw new ApiException("You not allow to update this postComment");}
+
+            old.setContent(postComment.getContent());
         commentRepository.save(old);
     }
 
@@ -65,19 +67,22 @@ public class CommentService {
         MyUser user =authRepository.findMyUserById(user_id);
         if (user==null){
             throw new ApiException("user not found");}
-        Comment comment = commentRepository.findCommentById(comment_id);
-        if (comment==null){
-            throw new ApiException("Comment not found");}
-        commentRepository.delete(comment);
+        if (!user.getParent().getIsActive()){throw new ApiException("Parent is not active therefore is not permitted to access this service!");}
+        PostComment postComment = commentRepository.findCommentById(comment_id);
+        if (postComment ==null){
+            throw new ApiException("PostComment not found");}
+        if(!postComment.getParent().getId().equals(user_id)){
+            throw new ApiException("You not allow to delete this postComment");}
+        commentRepository.delete(postComment);
     }
 
     public List<CommentDTO_Out> getNewCommentByPost (Integer post_id){
         return convertCommentToDTO(commentRepository.findAllByNewCommentByPost(post_id)) ;
     }
 
-    public List<CommentDTO_Out> convertCommentToDTO(Collection<Comment> comments){
+    public List<CommentDTO_Out> convertCommentToDTO(Collection<PostComment> postComments){
         List<CommentDTO_Out> commentDTOOuts = new ArrayList<>();
-        for(Comment c : comments){
+        for(PostComment c : postComments){
             commentDTOOuts.add(new CommentDTO_Out(c.getContent(),c.getParent().getFullName(),c.getCreatedAt()));}
         return commentDTOOuts;
     }

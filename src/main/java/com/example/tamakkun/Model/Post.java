@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -53,7 +52,7 @@ public class Post {
     private Parent parent;
 
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "post")
-    private Set<Comment> comments;
+    private Set<PostComment> postComments;
 
     @OneToMany(mappedBy = "post")
     private Set<Ticket> tickets;

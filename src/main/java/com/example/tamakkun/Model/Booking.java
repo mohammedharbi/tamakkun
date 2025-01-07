@@ -22,7 +22,6 @@ public class Booking {
     private Integer id;
 
 
-    @Future
     private LocalDateTime startTime;
 
     private Integer hours;
@@ -30,6 +29,7 @@ public class Booking {
     private String status;
 
     private Boolean isReviewed=false;
+
     private Boolean isAskedToReview=false;
 
     private Double totalPrice;

@@ -1,6 +1,7 @@
 package com.example.tamakkun.Service;
 
 import com.example.tamakkun.API.ApiException;
+import com.example.tamakkun.DTO_In.BookingDTO_In;
 import com.example.tamakkun.Model.*;
 import com.example.tamakkun.Repository.*;
 import com.google.zxing.BarcodeFormat;
@@ -32,7 +33,8 @@ public class BookingService {
 
 
 
-    public void newBooking(Integer parent_id, Integer child_id, Integer centre_id, Integer hours, Booking booking) {
+    public void newBooking(Integer parent_id, Integer child_id, Integer centre_id, BookingDTO_In bookingDTOIn) {
+
 
         // Validate Parent
         Parent parent = parentRepository.findParentById(parent_id);
@@ -51,8 +53,12 @@ public class BookingService {
 
         if(!centre.getIsVerified())throw new ApiException("The centre is not verified.");
 
+
+        Booking booking = new Booking(null,bookingDTOIn.getStartTime(),bookingDTOIn.getHours(),"Pending",
+                false,false,0.00,bookingDTOIn.getNotifyMe(),false,false,
+                null,parent,child,centre);
         // Validate Booking Time
-        LocalTime bookingStartTime = booking.getStartTime().toLocalTime();
+        LocalTime bookingStartTime = bookingDTOIn.getStartTime().toLocalTime();
         boolean isWithinOperatingHours = (centre.getClosingHour().isBefore(centre.getOpeningHour())) ?
                 (bookingStartTime.isAfter(centre.getOpeningHour()) || bookingStartTime.isBefore(centre.getClosingHour())) :
                 (bookingStartTime.isAfter(centre.getOpeningHour()) && bookingStartTime.isBefore(centre.getClosingHour()));
@@ -72,29 +78,32 @@ public class BookingService {
         for (Specialist specialist : matchingSpecialists) {
             boolean isAvailable = bookingDateRepository.findAllBySpecialist(specialist).stream()
                     .noneMatch(existingBooking ->
-                            !(existingBooking.getEndTime().isBefore(booking.getStartTime()) ||
-                                    existingBooking.getStartTime().isAfter(booking.getStartTime().plusHours(hours))));
+                            !(existingBooking.getEndTime().isBefore(bookingDTOIn.getStartTime()) ||
+                                    existingBooking.getStartTime().isAfter(bookingDTOIn.getStartTime().plusHours(bookingDTOIn.getHours()))));
 
             if (isAvailable) {
-                BookingDate newBookingDate = new BookingDate(null, booking.getStartTime(),
-                        booking.getStartTime().plusHours(booking.getHours()), booking, centre, specialist);
+                BookingDate newBookingDate = new BookingDate(null, bookingDTOIn.getStartTime(),
+                        bookingDTOIn.getStartTime().plusHours(bookingDTOIn.getHours()), booking, centre, specialist);
 
                 newBookingDate.getBooking().setChild(child);
                 newBookingDate.getBooking().setCentre(centre);
                 newBookingDate.getBooking().setParent(parent);
-                newBookingDate.getBooking().setTotalPrice(centre.getPricePerHour() * booking.getHours());
+                newBookingDate.getBooking().setNotifyMe(bookingDTOIn.getNotifyMe());
+                newBookingDate.getBooking().setTotalPrice(centre.getPricePerHour() * bookingDTOIn.getHours());
                 newBookingDate.getBooking().setStatus("Pending");
 
                 bookingDateRepository.save(newBookingDate);
+
+
                  // Generate QR Code and send email
                 try {
-                    if (booking.getIsScanned()) {
+                    if (newBookingDate.getBooking().getIsScanned()) {
                         throw new ApiException("Cannot generate a QR code for a scanned booking!");
                     }
 
-                    byte[] qrCode = generateQRCode(booking); // Generate QR code method calling
+                    byte[] qrCode = generateQRCode(newBookingDate); // Generate QR code method calling
                     // Send email notification
-                    sendBookingNotification(booking.getParent().getMyUser().getEmail(), booking, qrCode);
+                    sendBookingNotification(newBookingDate.getBooking().getParent().getMyUser().getEmail(), newBookingDate, qrCode);
 
                 } catch (Exception e) {
                     throw new ApiException("Failed to generate QR code or send email! " + e.getMessage());
@@ -113,19 +122,19 @@ public class BookingService {
     }
 
 
-    // Helper method to generate QR code as PNG image with email attachment
-    private byte[] generateQRCode(Booking booking) throws WriterException, IOException {
+    // By Durrah
+    private byte[] generateQRCode(BookingDate bookingDate) throws WriterException, IOException {
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
 
         // QR code content includes essential booking details
         String qrContent = String.format("Booking ID: %d\nCentre: %s\nSpecialist: %s (%s)\nStart: %s\nEnd: %s\nTotal Price: %.2f",
-                booking.getId(),
-                booking.getCentre().getName(),
-                booking.getBookingDate().getSpecialist().getName(),
-                booking.getBookingDate().getSpecialist().getPhoneNumber(),
-                booking.getStartTime().toString(),
-                booking.getStartTime().plusHours(booking.getHours()).toString(),
-                booking.getTotalPrice());
+                bookingDate.getBooking().getId(),
+                bookingDate.getBooking().getCentre().getName(),
+                bookingDate.getSpecialist().getName(),
+                bookingDate.getSpecialist().getPhoneNumber(),
+                bookingDate.getBooking().getStartTime().toString(),
+                bookingDate.getEndTime().toString(),
+                bookingDate.getBooking().getTotalPrice());
 
         var bitMatrix = qrCodeWriter.encode(qrContent, BarcodeFormat.QR_CODE, 300, 300);
 
@@ -136,27 +145,30 @@ public class BookingService {
 
     }
 
-    // Helper method to send an email with booking details to parent's email
-
-    private void sendBookingNotification(String email, Booking booking, byte[] qrCode) {
+    // By Durrah
+    private void sendBookingNotification(String email, BookingDate bookingDate, byte[] qrCode) {
         String subject = "Your Booking Confirmation!";
 
         String body = String.format("Dear %s,\n\nYour booking has been confirmed.\n\nDetails:\nCentre: %s\nSpecialist: %s\nStart: %s\nEnd: %s\nTotal Price: %.2f\n\nPlease find your QR code attached.",
-                booking.getParent().getFullName(),
-                booking.getCentre().getName(),
-                booking.getBookingDate().getSpecialist().getName(),
-                booking.getStartTime().toString(),
-                booking.getStartTime().plusHours(booking.getHours()),
-                booking.getTotalPrice());
+                bookingDate.getBooking().getParent().getFullName(),
+                bookingDate.getBooking().getCentre().getName(),
+                bookingDate.getSpecialist().getName(),
+                bookingDate.getBooking().getStartTime().toString(),
+                bookingDate.getEndTime().toString(),
+                bookingDate.getBooking().getTotalPrice());
 
         emailService.sendEmailWithAttachment(email, subject, body, qrCode, "BookingQRCode.png");
     }
 
-    public void markBookingAsScanned(Integer bookingId) {
+    // By Durrah
+    public void markBookingAsScanned(Integer centreId, Integer bookingId) {
 
+        Centre centre = centreRepository.findCentreById(centreId);
+        if (centre == null){throw new ApiException("centre not found!");}
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new ApiException("Booking not found!"));
 
+        if (!booking.getCentre().equals(centre)){throw new ApiException("this booking doesn't belong to the centre");}
         // Check if the booking is already scanned
         if (Boolean.TRUE.equals(booking.getIsScanned())) {
             throw new ApiException("This booking has already been scanned and completed!");
@@ -167,15 +179,16 @@ public class BookingService {
         booking.setStatus("Completed");
 
         bookingRepository.save(booking);
-
     }
 
 
     /**
      * Sends reminders to parents with bookings 1 day from now.
      */
-   // @Scheduled(cron = "0 0 10 * * ?") // Scheduled to run daily at 10:00AM
-    @Scheduled(cron = "*/10 * * * * ?") // Scheduled to run every 10 seconds
+
+    // By Durrah
+     @Scheduled(cron = "0 0 10 * * ?") // Scheduled to run daily at 10:00AM
+    //@Scheduled(cron = "*/10 * * * * ?") // Scheduled to run every 10 seconds // for test
     public void sendBookingReminders() {
         LocalDateTime now = LocalDateTime.now();
 
@@ -220,7 +233,8 @@ public class BookingService {
     }
 
     //E:#12 Mohammed
-    @Scheduled(cron = "0 0 * * * ?") // the task will execute at the beginning of every hour (e.g., 1:00 PM, 2:00 PM, etc.).
+    @Scheduled(cron = "0 0 10 * * ?") // Scheduled to run daily at 10:00AM
+    //@Scheduled(cron = "*/10 * * * * ?") // Scheduled to run every 10 seconds //for test only//
     public void updateBookingStatus() {
         for (Booking booking : bookingRepository.findAll()) {
             if (booking.getStatus().equalsIgnoreCase("Pending")) {
@@ -234,7 +248,8 @@ public class BookingService {
     }
 
     //E:#13 Mohammed
-    @Scheduled(cron = "0 0 * * * ?") // the task will execute at the beginning of every hour (e.g., 1:00 PM, 2:00 PM, etc.).
+    @Scheduled(cron = "0 0 10 * * ?") // Scheduled to run daily at 10:00AM
+    //@Scheduled(cron = "*/10 * * * * ?") // Scheduled to run every 10 seconds //for test only//
     public void autoRequestForReviewAfterVisit(){
 
         for (Booking booking : bookingRepository.findAll()) {
@@ -253,7 +268,7 @@ public class BookingService {
                                     + "Total Price: %.2f\n\n"
                                     + "We would greatly appreciate it if you could take a moment to share your feedback. Your thoughts help us improve and ensure we continue delivering exceptional service.\n\n"
                                     + "Please click the link below to leave your review:\n"
-                                    + "https://www.tamakkun.com/review\n\n"
+                                    + "https://www.tamakkun-system.com/review/new-review\n\n"
                                     + "Thank you for choosing us. We look forward to serving you again soon.\n\n"
                                     + "Best regards,\n"
                                     + "The Tamakkun Team",

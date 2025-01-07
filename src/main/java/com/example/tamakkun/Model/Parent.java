@@ -2,13 +2,12 @@ package com.example.tamakkun.Model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -23,16 +22,16 @@ public class Parent {
     private Integer id;
 
 
-    @NotEmpty(message = "Name is required!")
+   // @NotEmpty(message = "Name is required!")
     @Column(columnDefinition = "varchar(30) not null")
     private String fullName;
 
-    @NotEmpty(message = "PhoneNumber is required!")
-    @Pattern(regexp = "^(\\+966|0)?5\\d{8}$",   message = "Phone number must start with +966 or 05 and be followed by 8 digits")
-    @Column(columnDefinition = "varchar(13) not null")
+    //@NotEmpty(message = "PhoneNumber is required!")
+    //@Pattern(regexp = "^(\\+966|0)?5\\d{8}$",   message = "Phone number must start with +966 or 05 and be followed by 8 digits")
+    @Column(columnDefinition = "varchar(13) not null unique")
     private String phoneNumber;
 
-    @NotEmpty(message = "Address is required!")
+   // @NotEmpty(message = "Address is required!")
     @Column(columnDefinition = "varchar(50) not null")
     private String address;
 
@@ -57,7 +56,7 @@ public class Parent {
     private Set<Post> posts;
 
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "parent")
-    private Set<Comment> comments;
+    private Set<PostComment> postComments;
 
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "parent")
     private Set<Review> reviews;
@@ -65,7 +64,8 @@ public class Parent {
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "parent")
     private Set<Booking> bookings;
 
-
+    @OneToMany(mappedBy = "parent")
+    private Set<Ticket> tickets;
 
 
 

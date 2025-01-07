@@ -28,7 +28,7 @@ public class Review {
     @Column(columnDefinition = "int not null")
     private Integer ratingSpecialist;
 
-    @Size(max = 500, message = "Comment cannot exceed 500 characters!")
+    @Size(max = 500, message = "PostComment cannot exceed 500 characters!")
     @Column(columnDefinition = "varchar(500) not null")
     private String comment;
 

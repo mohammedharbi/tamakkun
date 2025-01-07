@@ -60,7 +60,7 @@ public class Ticket {
 
     @ManyToOne
     @JsonIgnore
-    private Comment comment;
+    private PostComment postComment;
 
     @OneToMany(mappedBy = "ticket")
     private Set<TicketComment> comments;

@@ -2,6 +2,7 @@ package com.example.tamakkun.Service;
 
 import com.example.tamakkun.API.ApiException;
 import com.example.tamakkun.DTO_Out.ActivityDTO_Out;
+import com.example.tamakkun.DTO_Out.CentreDTO_Out;
 import com.example.tamakkun.Model.Activity;
 import com.example.tamakkun.Model.Centre;
 import com.example.tamakkun.Model.MyUser;
@@ -18,29 +19,40 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ActivityService {
-
+    private final TextToSpeechService textToSpeechService;
     private final ActivityRepository activityRepository;
     private final CentreRepository centreRepository;
     private final AuthRepository authRepository;
 
-    public List<ActivityDTO_Out> getAllActivities(){
-        List<Activity> activities = activityRepository.findAll();
-        List<ActivityDTO_Out>activityDTOOuts= new ArrayList<>();
+    public List<ActivityDTO_Out> getAllActivitiesByCentre(Integer user_id, Integer centre_id) {
 
-        for(Activity activity : activities){
-            ActivityDTO_Out activityDTOOut = new ActivityDTO_Out(activity.getName(), activity.getDescription(), activity.getAllowedDisabilities());
-            activityDTOOuts.add(activityDTOOut);
-        }
-        return activityDTOOuts;
+        Centre centre = centreRepository.findCentreById(centre_id);
+        if(centre==null)
+            throw new ApiException("Centre not found!");
+
+        MyUser user =authRepository.findMyUserById(user_id);
+        if(user==null)
+            throw new ApiException("User not found!");
+
+        return activityRepository.findAll().stream()
+                .map(activity -> new ActivityDTO_Out(
+                        activity.getName(),
+                        activity.getDescription(),
+                        activity.getAllowedDisabilities()
+                ))
+                .collect(Collectors.toList());
     }
 
-    //Activity will be added if centre already there
+
     public void addActivity(Integer centre_id, Activity activity){
         MyUser user =authRepository.findMyUserById(centre_id);
 
         if(user==null)
             throw new ApiException("Centre not found!");
 
+        if(!user.getCentre().getIsVerified()){
+            throw new ApiException("You can't add any activity,the centre must be verified!");
+        }
         activity.setCentre(user.getCentre());
         activityRepository.save(activity);
     }
@@ -88,7 +100,12 @@ public class ActivityService {
     //End CRUD
 
 
-    public List<ActivityDTO_Out> getActivitiesByDisabilityType(String disabilityType) {
+    public List<ActivityDTO_Out> getActivitiesByDisabilityType(Integer user_id, String disabilityType) {
+
+        MyUser user=authRepository.findMyUserById(user_id);
+        if(user==null)
+            throw new ApiException("User not found!");
+
         List<Activity> activities = activityRepository.findActivitiesByDisabilityType(disabilityType);
 
 
@@ -101,6 +118,16 @@ public class ActivityService {
 
 
 
+    public byte[] getActivityDescriptionAsAudio(Integer activity_id) {
+        // الحصول على المركز
+        Activity activity = activityRepository.findActivityById(activity_id);
+        if (activity == null) {
+            throw new ApiException("This activity not found!");
+        }
+
+        // تحويل الوصف إلى صوت
+        return textToSpeechService.convertTextToAudio(activity.getDescription());
+    }
 
 
 

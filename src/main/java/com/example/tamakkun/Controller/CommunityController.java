@@ -1,9 +1,6 @@
 package com.example.tamakkun.Controller;
 
-import com.example.tamakkun.API.ApiException;
 import com.example.tamakkun.API.ApiResponse;
-import com.example.tamakkun.Model.Child;
-import com.example.tamakkun.Model.Comment;
 import com.example.tamakkun.Model.Community;
 import com.example.tamakkun.Model.MyUser;
 import com.example.tamakkun.Service.CommunityService;
@@ -21,12 +18,12 @@ public class CommunityController {
 
 
     @GetMapping("/get-community/{community_id}")
-    public ResponseEntity getCommunity (@PathVariable Integer community_id){
-        return ResponseEntity.status(200).body(communityService.getCommunity(community_id));
+    public ResponseEntity getCommunity (@AuthenticationPrincipal MyUser user, @PathVariable Integer community_id){
+        return ResponseEntity.status(200).body(communityService.getCommunity(user.getId(),community_id));
     }
-    @PutMapping("/update/{user_id}/{community_id}")
-    public ResponseEntity update (@PathVariable Integer user_id ,@PathVariable Integer community_id, @RequestBody @Valid Community community){
-        communityService.update(user_id, community_id,community);
+    @PutMapping("/update/{community_id}")
+    public ResponseEntity update (@AuthenticationPrincipal MyUser myUser ,@PathVariable Integer community_id, @RequestBody @Valid Community community){
+        communityService.update(myUser.getId(), community_id,community);
         return ResponseEntity.status(200).body(new ApiResponse("updated successfully"));
     }
 
@@ -35,6 +32,5 @@ public class CommunityController {
         communityService.delete(myUser.getId(),community_id);
         return ResponseEntity.status(200).body(new ApiResponse("deleted successfully"));
     }
-
 
 }

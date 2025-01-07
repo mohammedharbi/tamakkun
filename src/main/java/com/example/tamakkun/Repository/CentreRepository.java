@@ -2,6 +2,7 @@ package com.example.tamakkun.Repository;
 
 import com.example.tamakkun.Model.Activity;
 import com.example.tamakkun.Model.Centre;
+import com.example.tamakkun.Model.MyUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -14,7 +15,7 @@ public interface CentreRepository extends JpaRepository<Centre, Integer> {
 
     Centre findCentreById(Integer id);
 
-    Centre findCentreByName(String name);
+    Centre findCentreByNameContaining(String name);
 
     // to find centres by address case-insensitive search
     List<Centre> findByAddressContainingIgnoreCase(String address);
@@ -27,4 +28,9 @@ public interface CentreRepository extends JpaRepository<Centre, Integer> {
 
     @Query("SELECT  c FROM Centre c WHERE c.isVerified = false")
     List<Centre> findUnverifiedCentres();
+
+    @Query("select c from Centre c join c.reviews r group by c.id order by AVG (r.ratingCentre) desc ")
+    List<Centre> findTop5ByAverageRating ();
+
+    Centre findCentreByMyUser (MyUser user);
 }

@@ -2,6 +2,7 @@ package com.example.tamakkun.Service;
 
 import com.example.tamakkun.API.ApiException;
 import com.example.tamakkun.Model.Centre;
+import com.example.tamakkun.Model.MyUser;
 import com.example.tamakkun.Model.Parent;
 import com.example.tamakkun.Repository.AuthRepository;
 import com.example.tamakkun.Repository.CentreRepository;
@@ -19,16 +20,9 @@ public class AuthService {
     private final CentreRepository centreRepository;
     private final ParentRepository parentRepository;
 
-//    public void register(MyUser user) {
-//        user.setRole("USER");
-//        String HashPass = new BCryptPasswordEncoder().encode(user.getPassword());
-//        user.setPassword(HashPass);
-//        authRepository.save(user);
-//    }
-
-//    public List<MyUser> getAllUsers() {
-//        return authRepository.findAll();
-//    }
+    public List<MyUser> getAllUsers() {
+        return authRepository.findAll();
+    }
 
     public void verifyCentre(Integer centreId) {
         Centre centre = centreRepository.findCentreById(centreId);
@@ -57,9 +51,10 @@ public class AuthService {
     public void unActiveParent(Integer parent_id){ // by admin
         Parent parent = parentRepository.findParentById(parent_id);
         if (parent == null) {throw new ApiException("parent not found");}
-        if (parent.getIsActive()){
-            parent.setIsActive(false);
-        }else throw new ApiException("parent is already not active");
+        if (!parent.getIsActive()){ throw new ApiException("parent is already not active");}
+
+        parent.setIsActive(false);
+        parentRepository.save(parent);
     }
 
     //E:#11 Mohammed
@@ -69,6 +64,7 @@ public class AuthService {
         if (unActiveParents.isEmpty()) {throw new ApiException("Not found any unActive parents");}
 
         return unActiveParents;
+
     }
 
 }

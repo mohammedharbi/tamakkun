@@ -18,51 +18,51 @@ public class ParentController {
     private final ParentService parentService;
 
 
-    @GetMapping("get-parent-by-id/{user_id}")
-    public  ResponseEntity getParentById (@PathVariable Integer user_id){
-        return ResponseEntity.status(200).body(parentService.getParentById(user_id));
+    @GetMapping("get-my-info")
+    public  ResponseEntity getParentById (@AuthenticationPrincipal MyUser user){
+        return ResponseEntity.status(200).body(parentService.getParentById(user.getId()));
     }
 
     @PostMapping("/parent-register")
-    public ResponseEntity register (@RequestBody @Valid ParentDTO_In parentDTOIn){
-        parentService.register(parentDTOIn);
+    public ResponseEntity parentRegister (@RequestBody @Valid ParentDTO_In parentDTOIn){
+        parentService.parentRegister(parentDTOIn);
         return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse("Parent registered successfully!"));
     }
-    @PutMapping("/update/{user_id}")
-    public ResponseEntity update (@PathVariable Integer user_id, @RequestBody @Valid ParentDTO_In  parentDTOIn){
-        parentService.update(user_id,parentDTOIn);
-        return ResponseEntity.status(200).body(new ApiResponse("updated successfully"));
+    @PutMapping("/update")
+    public ResponseEntity updateParent (@AuthenticationPrincipal MyUser user, @RequestBody @Valid ParentDTO_In  parentDTOIn){
+        parentService.updateParent(user.getId(), parentDTOIn);
+        return ResponseEntity.status(200).body(new ApiResponse("Parent updated successfully!"));
     }
-    @DeleteMapping("/delete/{user_id}")
-    public ResponseEntity delete (@PathVariable Integer user_id ){
-        parentService.delete(user_id);
-        return ResponseEntity.status(200).body(new ApiResponse("deleted successfully"));
+    @DeleteMapping("/delete")
+    public ResponseEntity deleteParent (@AuthenticationPrincipal MyUser user ){
+        parentService.deleteParent(user.getId());
+        return ResponseEntity.status(200).body(new ApiResponse("Parent deleted successfully!"));
     }
 
-    @GetMapping("get-all-old-bookings-by-parent/parent/{parent_id}")
-    public ResponseEntity getAllOldBookingsByParent(@PathVariable Integer parent_id){
-        return ResponseEntity.status(200).body(parentService.getAllOldBookingsByParent(parent_id));
+    @GetMapping("get-all-old-bookings-by-parent")
+    public ResponseEntity getAllOldBookingsByParent(@AuthenticationPrincipal MyUser user){
+        return ResponseEntity.status(200).body(parentService.getAllOldBookingsByParent(user.getId()));
     }
-    @GetMapping("get-all-new-bookings-by-parent/parent/{parent_id}")
-    public ResponseEntity getAllNewBookingsByParent(@PathVariable Integer parent_id){
-        return ResponseEntity.status(200).body(parentService.getAllNewBookingsByParent(parent_id));
+    @GetMapping("get-all-new-bookings-by-parent")
+    public ResponseEntity getAllNewBookingsByParent(@AuthenticationPrincipal MyUser user){
+        return ResponseEntity.status(200).body(parentService.getAllNewBookingsByParent(user.getId()));
     }
-    @GetMapping("get-all-un-reviewed-bookings-by-parent/parent/{parent_id}")
-    public ResponseEntity getAllUnReviewedBookingsByParent(@PathVariable Integer parent_id){
-        return ResponseEntity.status(200).body(parentService.getAllUnReviewedBookingsByParent(parent_id));
+    @GetMapping("get-all-un-reviewed-bookings-by-parent")
+    public ResponseEntity getAllUnReviewedBookingsByParent(@AuthenticationPrincipal MyUser user){
+        return ResponseEntity.status(200).body(parentService.getAllUnReviewedBookingsByParent(user.getId()));
     }
-    @GetMapping("get-all-reviewed-bookings-by-parent/parent/{parent_id}")
-    public ResponseEntity getAllReviewedBookingsByParent (@PathVariable Integer parent_id){// need to be tested
-        return ResponseEntity.status(200).body(parentService.getAllReviewedBookingsByParent(parent_id));
+    @GetMapping("get-all-reviewed-bookings-by-parent")
+    public ResponseEntity getAllReviewedBookingsByParent (@AuthenticationPrincipal MyUser user){// need to be tested
+        return ResponseEntity.status(200).body(parentService.getAllReviewedBookingsByParent(user.getId()));
     }
-    @GetMapping("recommendation-to-parents-by-centre-and-activities/parent/{parent_id}")
-    public ResponseEntity recommendationToParentsByCentresAndActivities(@PathVariable Integer parent_id){
-        return ResponseEntity.status(200).body(parentService.recommendationToParentsByCentresAndActivities(parent_id));
+    @GetMapping("recommendation-to-parents-by-centre-and-activities")
+    public ResponseEntity recommendationToParentsByCentresAndActivities(@AuthenticationPrincipal MyUser user){
+        return ResponseEntity.status(200).body(parentService.recommendationToParentsByCentresAndActivities(user.getId()));
     }
-    @PutMapping("cancel-booking/parent/{parent_id}/booking/{booking_id}")
-    public ResponseEntity cancelBooking(@PathVariable Integer parent_id, @PathVariable Integer booking_id){
-        parentService.cancelBooking(parent_id,booking_id);
-        return ResponseEntity.status(200).body(new ApiResponse("booking cancelled"));
+    @PutMapping("cancel-booking/booking/{booking_id}")
+    public ResponseEntity cancelBooking(@AuthenticationPrincipal MyUser user, @PathVariable Integer booking_id){
+        parentService.cancelBooking(user.getId(), booking_id);
+        return ResponseEntity.status(200).body(new ApiResponse("Booking cancelled successfully!"));
     }
 
 }

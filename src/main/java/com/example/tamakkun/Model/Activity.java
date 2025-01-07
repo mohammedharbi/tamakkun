@@ -22,7 +22,6 @@ public class Activity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-
     @NotEmpty(message = "Activity name is required!")
     @Size(max = 30, message = "Activity name cannot exceed 30 characters!")
     @Column(columnDefinition = "varchar(30) not null")
@@ -33,25 +32,13 @@ public class Activity {
     @Column(columnDefinition = "varchar(500) not null")
     private String description;
 
-
     @ElementCollection
     @CollectionTable(name = "allowed_disabilities", joinColumns = @JoinColumn(name = "activity_id"))
     @Column(name = "allowedDisabilities")
     private List<String> allowedDisabilities;
 
-
-
     @ManyToOne
     @JsonIgnore
     private Centre centre;
-
-
-
-
-
-
-
-
-
 
 }
