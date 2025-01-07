@@ -189,8 +189,8 @@ public class BookingService {
      */
 
     // By Durrah
-     @Scheduled(cron = "0 0 10 * * ?") // Scheduled to run daily at 10:00AM
-    //@Scheduled(cron = "*/10 * * * * ?") // Scheduled to run every 10 seconds // for test
+     //@Scheduled(cron = "0 0 10 * * ?") // Scheduled to run daily at 10:00AM
+    @Scheduled(cron = "*/10 * * * * ?") // Scheduled to run every 10 seconds // for test
     public void sendBookingReminders() {
         LocalDateTime now = LocalDateTime.now();
 
@@ -235,8 +235,8 @@ public class BookingService {
     }
 
     //E:#12 Mohammed
-    @Scheduled(cron = "0 0 10 * * ?") // Scheduled to run daily at 10:00AM
-    //@Scheduled(cron = "*/10 * * * * ?") // Scheduled to run every 10 seconds //for test only//
+    //@Scheduled(cron = "0 0 10 * * ?") // Scheduled to run daily at 10:00AM
+    @Scheduled(cron = "*/10 * * * * ?") // Scheduled to run every 10 seconds //for test only//
     public void updateBookingStatus() {
         for (Booking booking : bookingRepository.findAll()) {
             if (booking.getStatus().equalsIgnoreCase("Pending")) {
@@ -250,8 +250,8 @@ public class BookingService {
     }
 
     //E:#13 Mohammed
-    @Scheduled(cron = "0 0 10 * * ?") // Scheduled to run daily at 10:00AM
-    //@Scheduled(cron = "*/10 * * * * ?") // Scheduled to run every 10 seconds //for test only//
+    //@Scheduled(cron = "0 0 10 * * ?") // Scheduled to run daily at 10:00AM
+    @Scheduled(cron = "*/10 * * * * ?") // Scheduled to run every 10 seconds //for test only//
     public void autoRequestForReviewAfterVisit(){
 
         for (Booking booking : bookingRepository.findAll()) {
