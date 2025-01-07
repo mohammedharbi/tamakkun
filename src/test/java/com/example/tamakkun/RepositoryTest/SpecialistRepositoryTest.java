@@ -46,15 +46,12 @@ public class SpecialistRepositoryTest {
         LocalTime opening = LocalTime.of(10,00);
 
         LocalTime closing = LocalTime.of(22,00);
-        // Create and save a user for the Centre
         MyUser user = new MyUser(null, "CentreUser", "password123", "CENTRE", "centreuser@example.com", null, null, null, null);
         authRepository.save(user);
 
-        // Create and save a Centre
         centre1 = new Centre(null, "Centre A", "Description A", "123 Main St", opening, closing, "1234567890", "0501234567", true, 100.0, "https://image.com/img1", user, null, null, null, null, null, null);
         centreRepository.save(centre1);
 
-        // Create and save Specialists
         specialist1 = new Specialist(null, "John Doe", "Speech Therapy", "0501234567", 5, "https://image.com/img2", Arrays.asList("AUTISM", "DOWN_SYNDROME"), null, null, centre1);
         specialist2 = new Specialist(null, "Jane Smith", "Physical Therapy", "0509876543", 7, "https://image.com/img3", Arrays.asList("PHYSICAL_DISABILITY", "SENSORY_DISABILITY"), null, null, centre1);
         specialist3 = new Specialist(null, "Emma Brown", "Occupational Therapy", "0507654321", 4, "https://image.com/img4", Arrays.asList("SPEECH_AND_LANGUAGE_DISORDERS", "AUTISM"), null, null, centre1);
