@@ -116,7 +116,7 @@ public class ParentService {
                 //change it to DTO OUT
                 BookingDTO_Out bookingDTO = new BookingDTO_Out(booking.getParent().getFullName(),
                         booking.getChild().getFullName(),booking.getBookingDate().getSpecialist().getName(),
-                        booking.getStartTime().toLocalDate(),booking.getStartTime().toLocalTime(),booking.getHours(),
+                        booking.getStartTime().toLocalDate(),booking.getBookingDate().getEndTime().toLocalDate(),booking.getStartTime().toLocalTime(),booking.getStatus(),booking.getHours(),
                         booking.getTotalPrice());
                 oldBookings.add(bookingDTO);
             }
@@ -146,7 +146,7 @@ public class ParentService {
                 //change it to DTO OUT
                 BookingDTO_Out bookingDTO = new BookingDTO_Out(booking.getParent().getFullName(),
                         booking.getChild().getFullName(),booking.getBookingDate().getSpecialist().getName(),
-                        booking.getStartTime().toLocalDate(),booking.getStartTime().toLocalTime(),booking.getHours(),
+                        booking.getStartTime().toLocalDate(),booking.getBookingDate().getEndTime().toLocalDate(),booking.getStartTime().toLocalTime(),booking.getStatus(),booking.getHours(),
                         booking.getTotalPrice());
                 newBookings.add(bookingDTO);
             }
@@ -176,7 +176,7 @@ public class ParentService {
                 //change it to DTO OUT
                 BookingDTO_Out bookingDTO = new BookingDTO_Out(booking.getParent().getFullName(),
                         booking.getChild().getFullName(),booking.getBookingDate().getSpecialist().getName(),
-                        booking.getStartTime().toLocalDate(),booking.getStartTime().toLocalTime(),booking.getHours(),
+                        booking.getStartTime().toLocalDate(),booking.getBookingDate().getEndTime().toLocalDate(),booking.getStartTime().toLocalTime(),booking.getStatus(),booking.getHours(),
                         booking.getTotalPrice());
                 Bookings.add(bookingDTO);
             }

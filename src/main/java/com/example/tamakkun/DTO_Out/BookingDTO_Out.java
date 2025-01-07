@@ -15,7 +15,9 @@ public class BookingDTO_Out {
     private String childName;
     private String specialistName;
     private LocalDate bookingDate;
+    private LocalDate bookingDateEnd;
     private LocalTime bookingTime;
+    private String status;
     private Integer hours;
     private Double totalPrice;
 }
