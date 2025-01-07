@@ -1,9 +1,6 @@
 package com.example.tamakkun.Controller;
 
-import com.example.tamakkun.API.ApiException;
 import com.example.tamakkun.API.ApiResponse;
-import com.example.tamakkun.Model.Child;
-import com.example.tamakkun.Model.Comment;
 import com.example.tamakkun.Model.Community;
 import com.example.tamakkun.Model.MyUser;
 import com.example.tamakkun.Service.CommunityService;

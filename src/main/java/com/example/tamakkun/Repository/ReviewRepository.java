@@ -17,13 +17,11 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
 
     List<Review> findReviewByCentre(Centre centre);
 
-    @Query(value = "SELECT r.specialist_id, AVG(r.rating_specialist) as avgRating " +
-            "FROM review r " +
-            "WHERE r.centre_id = :centre_id " +
-            "GROUP BY r.specialist_id " +
-            "ORDER BY avgRating DESC " +
-            "LIMIT 3", nativeQuery = true)
-    List<Object[]> findTopThreeRatedSpecialists(Integer centreId);
+    @Query("select r.specialist FROM Review r " +
+            "WHERE r.centre.id = ?1 " +
+            "GROUP BY r.specialist.id " +
+            "ORDER BY AVG(r.ratingSpecialist) DESC")
+    List<Specialist> findTopThreeRatedSpecialistsByCentre(Integer centreId);
 
     List<Review> findReviewByParent(Parent parent);
 

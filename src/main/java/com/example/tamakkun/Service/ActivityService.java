@@ -49,6 +49,10 @@ public class ActivityService {
 
         if(user==null)
             throw new ApiException("Centre not found!");
+
+        if(!user.getCentre().getIsVerified()){
+            throw new ApiException("You can't add any activity,the centre must be verified!");
+        }
         activity.setCentre(user.getCentre());
         activityRepository.save(activity);
     }

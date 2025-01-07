@@ -15,7 +15,7 @@ public interface CentreRepository extends JpaRepository<Centre, Integer> {
 
     Centre findCentreById(Integer id);
 
-    Centre findCentreByName(String name);
+    Centre findCentreByNameContaining(String name);
 
     // to find centres by address case-insensitive search
     List<Centre> findByAddressContainingIgnoreCase(String address);

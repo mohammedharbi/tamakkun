@@ -22,7 +22,6 @@ public class Booking {
     private Integer id;
 
 
-    @Future
     private LocalDateTime startTime;
 
     private Integer hours;

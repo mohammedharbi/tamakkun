@@ -53,9 +53,9 @@ public class SpecialistController {
     }
 
 
-    @GetMapping("/get-specialist-byName/{name}")
-    public ResponseEntity getSpecialistByName(@PathVariable String name, @AuthenticationPrincipal MyUser user){
-        return ResponseEntity.status(200).body(specialistService.getSpecialistByName(name, user.getId()));
+    @GetMapping("/get-specialist-byPhoneNumber/{phoneNumber}")
+    public ResponseEntity getSpecialistByPhoneNumber(@PathVariable String phoneNumber, @AuthenticationPrincipal MyUser user){
+        return ResponseEntity.status(200).body(specialistService.getSpecialistByPhoneNumber(phoneNumber, user.getId()));
     }
 
 

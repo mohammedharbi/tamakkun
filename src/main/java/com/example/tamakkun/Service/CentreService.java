@@ -65,7 +65,7 @@ public class CentreService {
 
 
         MyUser myUser = new MyUser();
-
+        try {
         myUser.setUsername(centreDTOIn.getUsername());
         String hashPassword = new BCryptPasswordEncoder().encode(centreDTOIn.getPassword());
         myUser.setPassword(hashPassword);
@@ -91,7 +91,12 @@ public class CentreService {
 
         authRepository.save(myUser);
         centreRepository.save(centre);
-
+        }catch (Exception e){
+            if(myUser!=null){
+                authRepository.delete(myUser);
+            }
+            throw new ApiException("Failed to register parent:"+e.getMessage());
+        }
     }
 
 
@@ -172,7 +177,7 @@ public class CentreService {
             throw new ApiException("User not found!");
 
         // use the repository method to fetch centre
-        Centre centre = centreRepository.findCentreByName(name);
+        Centre centre = centreRepository.findCentreByNameContaining(name);
 
         if (centre == null) {
             throw new ApiException("Centre with name " + name + " not found!");

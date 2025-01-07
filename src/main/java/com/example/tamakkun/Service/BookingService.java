@@ -93,6 +93,8 @@ public class BookingService {
                 newBookingDate.getBooking().setStatus("Pending");
 
                 bookingDateRepository.save(newBookingDate);
+
+
                  // Generate QR Code and send email
                 try {
                     if (newBookingDate.getBooking().getIsScanned()) {
@@ -120,7 +122,7 @@ public class BookingService {
     }
 
 
-    // Helper method to generate QR code as PNG image with email attachment
+    // By Durrah
     private byte[] generateQRCode(BookingDate bookingDate) throws WriterException, IOException {
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
 
@@ -143,8 +145,7 @@ public class BookingService {
 
     }
 
-    // Helper method to send an email with booking details to parent's email
-
+    // By Durrah
     private void sendBookingNotification(String email, BookingDate bookingDate, byte[] qrCode) {
         String subject = "Your Booking Confirmation!";
 
@@ -159,6 +160,7 @@ public class BookingService {
         emailService.sendEmailWithAttachment(email, subject, body, qrCode, "BookingQRCode.png");
     }
 
+    // By Durrah
     public void markBookingAsScanned(Integer centreId, Integer bookingId) {
 
         Centre centre = centreRepository.findCentreById(centreId);
@@ -184,8 +186,9 @@ public class BookingService {
      * Sends reminders to parents with bookings 1 day from now.
      */
 
-   // @Scheduled(cron = "0 0 10 * * ?") // Scheduled to run daily at 10:00AM
-   // @Scheduled(cron = "*/10 * * * * ?") // Scheduled to run every 10 seconds
+    // By Durrah
+     @Scheduled(cron = "0 0 10 * * ?") // Scheduled to run daily at 10:00AM
+    //@Scheduled(cron = "*/10 * * * * ?") // Scheduled to run every 10 seconds // for test
     public void sendBookingReminders() {
         LocalDateTime now = LocalDateTime.now();
 
@@ -230,7 +233,8 @@ public class BookingService {
     }
 
     //E:#12 Mohammed
-    @Scheduled(cron = "0 0 * * * ?") // the task will execute at the beginning of every hour (e.g., 1:00 PM, 2:00 PM, etc.).
+    @Scheduled(cron = "0 0 10 * * ?") // Scheduled to run daily at 10:00AM
+    //@Scheduled(cron = "*/10 * * * * ?") // Scheduled to run every 10 seconds //for test only//
     public void updateBookingStatus() {
         for (Booking booking : bookingRepository.findAll()) {
             if (booking.getStatus().equalsIgnoreCase("Pending")) {
@@ -244,8 +248,8 @@ public class BookingService {
     }
 
     //E:#13 Mohammed
-    //@Scheduled(cron = "0 0 10 * * ?") // Scheduled to run daily at 10:00AM
-    //@Scheduled(cron = "*/10 * * * * ?") // Scheduled to run every 10 seconds
+    @Scheduled(cron = "0 0 10 * * ?") // Scheduled to run daily at 10:00AM
+    //@Scheduled(cron = "*/10 * * * * ?") // Scheduled to run every 10 seconds //for test only//
     public void autoRequestForReviewAfterVisit(){
 
         for (Booking booking : bookingRepository.findAll()) {

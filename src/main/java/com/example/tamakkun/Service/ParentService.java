@@ -40,18 +40,26 @@ public class ParentService {
 
     public void parentRegister (ParentDTO_In parentDTOIn){
         MyUser myUser =new MyUser();
-        myUser.setUsername(parentDTOIn.getUsername());
-        String hashPassword= new BCryptPasswordEncoder().encode(parentDTOIn.getPassword());
-        myUser.setPassword(hashPassword);
-        myUser.setRole("PARENT");
-        myUser.setEmail(parentDTOIn.getEmail());
-        authRepository.save(myUser);
-        Parent parent=new Parent();
-        parent.setFullName(parentDTOIn.getFullName());
-        parent.setPhoneNumber(parentDTOIn.getPhoneNumber());
-        parent.setAddress(parentDTOIn.getAddress());
-        parent.setMyUser(myUser);
-        parentRepository.save(parent);
+        try {
+
+            myUser.setUsername(parentDTOIn.getUsername());
+            String hashPassword = new BCryptPasswordEncoder().encode(parentDTOIn.getPassword());
+            myUser.setPassword(hashPassword);
+            myUser.setRole("PARENT");
+            myUser.setEmail(parentDTOIn.getEmail());
+            authRepository.save(myUser);
+            Parent parent = new Parent();
+            parent.setFullName(parentDTOIn.getFullName());
+            parent.setPhoneNumber(parentDTOIn.getPhoneNumber());
+            parent.setAddress(parentDTOIn.getAddress());
+            parent.setMyUser(myUser);
+            parentRepository.save(parent);
+        }catch (Exception e){
+            if(myUser!=null){
+                authRepository.delete(myUser);
+            }
+            throw new ApiException("Failed to register parent:"+e.getMessage());
+        }
     }
 
     public void updateParent(Integer user_id , ParentDTO_In parentDTOIn){
@@ -164,7 +172,7 @@ public class ParentService {
         // get only new bookings
         LocalDateTime currentDateTime = LocalDateTime.now();
         for (Booking booking : bookings) {
-            if (booking.getStatus().equalsIgnoreCase("Completed")) {
+            if (!booking.getIsReviewed()) {
                 //change it to DTO OUT
                 BookingDTO_Out bookingDTO = new BookingDTO_Out(booking.getParent().getFullName(),
                         booking.getChild().getFullName(),booking.getBookingDate().getSpecialist().getName(),
@@ -262,7 +270,7 @@ public class ParentService {
         if (!booking.getParent().getId().equals(parent.getId())) {throw new ApiException("parent dosen't own this booking");}
 
         if (booking.getStatus().equals("Cancelled")){throw new ApiException("Booking is already cancelled");}
-
+        if (!booking.getStatus().equals("Pending")){throw new ApiException("Booking is not at pending status ");}
         // booking can only be canceled if it's less than 24 hours
         LocalDateTime now = LocalDateTime.now();
         if (booking.getStartTime().isBefore(now.plusHours(24))) {
@@ -270,6 +278,10 @@ public class ParentService {
         }
 
         booking.setStatus("Cancelled");
+        booking.setCentre(null);
+        booking.setParent(null);
+        booking.getBookingDate().setSpecialist(null);
+        booking.getBookingDate().setCentre(null);
         bookingRepository.save(booking);
     }
 }

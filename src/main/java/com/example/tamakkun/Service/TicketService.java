@@ -21,6 +21,7 @@ public class TicketService {
     private final PostRepository postRepository;
     private final ParentRepository parentRepository;
     private final CommentRepository commentRepository;
+    private final BookingRepository bookingRepository;
 
 
 
@@ -50,6 +51,12 @@ public class TicketService {
         Centre centre = centreRepository.findCentreById(center_id);
         if (centre == null) {
             throw new ApiException("centre not found");}
+        Boolean hasBooking = bookingRepository.findBookingsByParent(user.getParent()).stream()
+                .anyMatch(booking -> booking.getCentre().getId().equals(center_id));
+
+        if (!hasBooking) {
+            throw new ApiException("You must have a previous booking at this center to file a complaint!");
+        }
         Ticket ticket = new Ticket();
         ticket.setType("COMPLAINT");
         ticket.setDescription(ticketDTOIn.getDescription());
@@ -66,17 +73,18 @@ public class TicketService {
         MyUser user = authRepository.findMyUserById(user_id);
         if (user == null) {
             throw new ApiException("user not found");}
-        Comment comment = commentRepository.findCommentById(comment_id);
-        if (comment == null) {
-            throw new ApiException("comment not found");}
+        PostComment postComment = commentRepository.findCommentById(comment_id);
+        if (postComment == null) {
+            throw new ApiException("postComment not found");}
 
         Ticket ticket = new Ticket();
         ticket.setType("COMPLAINT");
         ticket.setDescription(ticketDTOIn.getDescription());
         ticket.setCreatedBy(user);
-        ticket.setComment(comment);
+        ticket.setPostComment(postComment);
         ticket.setStatus("open");
         ticket.setCreatedAt(LocalDate.now());
+        ticket.setPost(postComment.getPost());
 
         ticketRepository.save(ticket);
     }
@@ -172,8 +180,8 @@ public class TicketService {
             target = "Post: " + ticket.getPost().getTitle();
         } else if (ticket.getCentre() != null) {
             target = "Centre: " + ticket.getCentre().getName();
-        } else if (ticket.getComment() != null) {
-            target = "Comment: " + ticket.getComment().getContent();
+        } else if (ticket.getPostComment() != null) {
+            target = "PostComment: " + ticket.getPostComment().getContent();
         } else if (ticket.getParent() != null) {
             target = "Parent: " + ticket.getParent().getFullName();
         }

@@ -55,8 +55,12 @@ public class PostService {
         if (!user.getParent().getIsActive()){throw new ApiException("Parent is not active therefore is not permitted to access this service!");}
 
         Post old = postRepository.findPostById(post_id);
+
         if (old==null){
             throw new ApiException("post not found");}
+        if (!old.getParent().getId().equals(user.getId())){
+            throw new ApiException("Parent is not permitted to access this service!");
+        }
         old.setTitle(post.getTitle());
         old.setContent(post.getContent());
         postRepository.save(old);
@@ -81,13 +85,12 @@ public class PostService {
     //#
     public PostDTO_Out getPostById ( Integer user_id,Integer post_id){
         MyUser user= authRepository.findMyUserById(user_id);
-
+        if (user==null){
+            throw new ApiException("user not found");}
         Post post =postRepository.findPostById(post_id);
         if (post==null){
             throw new ApiException("post not found");}
-        if(!user.getParent().getId().equals(post.getParent().getId())){
-            throw new ApiException("you not allowed");
-        }
+
         return new PostDTO_Out(post.getTitle(), post.getContent(), post.getCreatedAt(),post.getParent().getFullName(),post.getLikes());
     }
 

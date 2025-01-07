@@ -16,8 +16,8 @@ public interface SpecialistRepository extends JpaRepository<Specialist, Integer>
     List<Specialist> findBySupportedDisabilitiesContaining(String disabilityType);
 
 
-    @Query("SELECT s FROM Specialist s WHERE s.name = :name AND s.centre.id = :centreId")
-    Specialist findByNameAndCentreId(String name, Integer centreId);
+    @Query("SELECT s FROM Specialist s WHERE s.phoneNumber = :name AND s.centre.id = :centreId")
+    List<Specialist> findByPhoneNumberAndCentreId(String name, Integer centreId);
 
 
 

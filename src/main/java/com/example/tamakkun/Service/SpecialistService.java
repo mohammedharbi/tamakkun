@@ -1,7 +1,6 @@
 package com.example.tamakkun.Service;
 
 import com.example.tamakkun.API.ApiException;
-import com.example.tamakkun.DTO_Out.SpecialistDTO_Out;
 import com.example.tamakkun.Model.Centre;
 import com.example.tamakkun.Model.MyUser;
 import com.example.tamakkun.Model.Specialist;
@@ -11,9 +10,7 @@ import com.example.tamakkun.Repository.SpecialistRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -98,18 +95,18 @@ public class SpecialistService {
 
 
 
-    public SpecialistDTO_Out getSpecialistByName(String name, Integer centreId) {
+    public List<Specialist> getSpecialistByPhoneNumber(String phoneNumber, Integer centreId) {
         MyUser user = authRepository.findMyUserById(centreId);
         if(user==null)
             throw new ApiException("User not found!");
-        Specialist specialist = specialistRepository.findByNameAndCentreId(name, centreId);
+        List<Specialist> specialist = specialistRepository.findByPhoneNumberAndCentreId(phoneNumber, centreId);
 
-        // check if found a speciaalist
+        // check if found a Specialist
         if (specialist == null) {
-            throw new ApiException("Specialist with name " + name + " not found!");
+            throw new ApiException("Specialist with phoneNumber " + phoneNumber + " not found!");
         }
 
-        return new SpecialistDTO_Out(specialist.getName(), specialist.getSpecialization(), specialist.getExperienceYears(), specialist.getImageUrl(), specialist.getSupportedDisabilities());
+        return specialist;
     }
 
 

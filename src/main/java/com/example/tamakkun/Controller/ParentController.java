@@ -18,7 +18,7 @@ public class ParentController {
     private final ParentService parentService;
 
 
-    @GetMapping("get-parent-by-id")
+    @GetMapping("get-my-info")
     public  ResponseEntity getParentById (@AuthenticationPrincipal MyUser user){
         return ResponseEntity.status(200).body(parentService.getParentById(user.getId()));
     }

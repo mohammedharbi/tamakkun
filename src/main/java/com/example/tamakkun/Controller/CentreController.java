@@ -132,6 +132,11 @@ public class CentreController {
         return ResponseEntity.status(200).body(centreService.getAllNewBookingsByCentre(user.getId()));
     }
 
+    @GetMapping("/get-top5-center-by-avrRating")
+    public ResponseEntity getTop5CenterByAvrRating(){
+        return ResponseEntity.ok(centreService.getTop5CenterByAvrRating());
+    }
+
 
 
 

@@ -27,7 +27,7 @@ public class Centre {
 
     @NotEmpty(message = "Centre name is required!")
     @Size(max = 50, message = "Centre name cannot exceed 50 characters!")
-    @Column(columnDefinition = "varchar(50) not null")
+    @Column(columnDefinition = "varchar(50) not null unique")
     private String name;
 
 
@@ -47,10 +47,10 @@ public class Centre {
     @Column(columnDefinition = "varchar(20) not null")
     private LocalTime closingHour;
 
-    @Column(columnDefinition = "varchar(10) not null")
+    @Column(columnDefinition = "varchar(10) not null unique")
     private String commercialLicense;
 
-    @Column(columnDefinition = "varchar(13) not null")
+    @Column(columnDefinition = "varchar(13) not null unique")
     private String phoneNumber;
 
     @Column(columnDefinition = "Boolean")

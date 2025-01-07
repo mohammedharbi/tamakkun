@@ -9,6 +9,6 @@ import lombok.Data;
 @AllArgsConstructor
 public class TicketCommentDTO_In {
 
-    @NotEmpty(message = "Comment content is required!")
+    @NotEmpty(message = "PostComment content is required!")
     private String content;
 }

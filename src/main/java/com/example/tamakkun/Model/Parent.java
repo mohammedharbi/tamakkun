@@ -2,8 +2,6 @@ package com.example.tamakkun.Model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -58,7 +56,7 @@ public class Parent {
     private Set<Post> posts;
 
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "parent")
-    private Set<Comment> comments;
+    private Set<PostComment> postComments;
 
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "parent")
     private Set<Review> reviews;

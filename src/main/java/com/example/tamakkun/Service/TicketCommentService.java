@@ -36,11 +36,11 @@ public class TicketCommentService {
             throw new ApiException("ticket not found");
         }
         // only Admin or the ticket creator is allowed to comment
-        if (!ticket.getCreatedBy().getId().equals(user.getId()) && !user.getRole().equalsIgnoreCase("ADMIN")) {
+        if (!ticket.getCreatedBy().getId().equals(user_id) && !user.getRole().equalsIgnoreCase("ADMIN")) {
             throw new ApiException("Only the ticket creator or an admin can comment on this ticket.");
         }
         if (ticket.getStatus().equalsIgnoreCase("close")){
-            throw new ApiException("Comment cannot be added to closed ticket");
+            throw new ApiException("PostComment cannot be added to closed ticket");
         }
         TicketComment ticketComment= new TicketComment();
         ticketComment.setContent(ticketCommentDTOIn.getContent());

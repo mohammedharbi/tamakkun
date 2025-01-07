@@ -4,6 +4,7 @@ import com.example.tamakkun.API.ApiResponse;
 import com.example.tamakkun.DTO_Out.SpecialistRatingDTO;
 import com.example.tamakkun.Model.MyUser;
 import com.example.tamakkun.Model.Review;
+import com.example.tamakkun.Model.Specialist;
 import com.example.tamakkun.Service.ReviewService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +39,7 @@ public class ReviewController {
 
     @GetMapping("/top-three-specialists")
     public ResponseEntity getTopThreeRatedSpecialists(@AuthenticationPrincipal MyUser user) {
-        List<SpecialistRatingDTO> topSpecialists = reviewService.getTopThreeRatedSpecialists(user.getId());
+        List<Specialist> topSpecialists = reviewService.getTopThreeRatedSpecialistsByCentre(user.getId());
         return ResponseEntity.ok(topSpecialists);
     }
 

@@ -21,7 +21,7 @@ public class TicketComment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @NotEmpty(message = "Comment content is required!")
+    @NotEmpty(message = "PostComment content is required!")
     @Column(columnDefinition = "varchar(500) not null")
     private String content;
 

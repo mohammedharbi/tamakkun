@@ -51,9 +51,10 @@ public class AuthService {
     public void unActiveParent(Integer parent_id){ // by admin
         Parent parent = parentRepository.findParentById(parent_id);
         if (parent == null) {throw new ApiException("parent not found");}
-        if (parent.getIsActive()){
-            parent.setIsActive(false);
-        }else throw new ApiException("parent is already not active");
+        if (!parent.getIsActive()){ throw new ApiException("parent is already not active");}
+
+        parent.setIsActive(false);
+        parentRepository.save(parent);
     }
 
     //E:#11 Mohammed
@@ -63,6 +64,7 @@ public class AuthService {
         if (unActiveParents.isEmpty()) {throw new ApiException("Not found any unActive parents");}
 
         return unActiveParents;
+
     }
 
 }

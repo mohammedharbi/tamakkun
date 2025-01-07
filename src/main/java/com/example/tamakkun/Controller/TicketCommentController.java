@@ -20,7 +20,7 @@ public class TicketCommentController {
     @PostMapping("/add-comment/{ticket_id}")
     public ResponseEntity addComment (@AuthenticationPrincipal MyUser user , @PathVariable Integer ticket_id, @RequestBody @Valid TicketCommentDTO_In ticketCommentDTOIn){
         ticketCommentService.addComment(user.getId(), ticket_id, ticketCommentDTOIn);
-        return ResponseEntity.status(200).body(new ApiResponse("Comment added successfully!"));
+        return ResponseEntity.status(200).body(new ApiResponse("PostComment added successfully!"));
     }
 
 

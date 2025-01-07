@@ -93,20 +93,9 @@ public class ReviewService {
     }
 
 
-    public List<SpecialistRatingDTO> getTopThreeRatedSpecialists(Integer centre_id) {
-
-        MyUser user = authRepository.findMyUserById(centre_id);
-
-        if(user == null)
-            throw new ApiException("User not found!");
-
-        List<Object[]> results = reviewRepository.findTopThreeRatedSpecialists(centre_id);
-        return results.stream()
-                .map(row -> new SpecialistRatingDTO(
-                        (Integer) row[0],
-                        ((BigDecimal) row[1]).doubleValue()
-                ))
-                .toList();
+    public List<Specialist> getTopThreeRatedSpecialistsByCentre(Integer centreId) {
+        List<Specialist> specialists = reviewRepository.findTopThreeRatedSpecialistsByCentre(centreId);
+        return specialists.stream().limit(3).toList();
     }
 
 }
