@@ -25,18 +25,15 @@ public class CommunityRepositoryTest {
 
     @BeforeEach
     public void setUp() {
-        // Create Communities
         community1 = new Community(null, "Community 1", "Description of community 1","1- Don't do this. 2- Don't do that",null,null,null);
         community2 = new Community(null, "Community 2", "Description of community 2","1- Don't do this. 2- Don't do that",null,null,null);
 
-        // Save communities to the repository
         communityRepository.save(community1);
         communityRepository.save(community2);
     }
 
     @Test
     public void testFindCommunityById() {
-        // Test for finding community by ID
         Community foundCommunity = communityRepository.findCommunityById(community1.getId());
         assertThat(foundCommunity).isNotNull();
         assertThat(foundCommunity.getName()).isEqualTo("Community 1");
@@ -44,7 +41,6 @@ public class CommunityRepositoryTest {
 
     @Test
     public void testFindCommunityByIdNotFound() {
-        // Test for community not found
         Community foundCommunity = communityRepository.findCommunityById(999);  // Assuming 999 does not exist
         assertThat(foundCommunity).isNull();
     }
